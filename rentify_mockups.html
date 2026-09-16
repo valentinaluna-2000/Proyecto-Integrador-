@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rentify — Mockups navegables</title>
+<style>
+  :root{
+    --bg: #fafafa;
+    --panel: #ffffff;
+    --line: #b0b0b0;
+    --line-soft: #d8d8d8;
+    --text: #1a1a1a;
+    --text-soft: #6b6b6b;
+    --accent-note: #c98a1c;
+    --accent-note-bg: #fff4dd;
+    --hatch: repeating-linear-gradient(135deg, #e2e2e2, #e2e2e2 6px, #ececec 6px, #ececec 12px);
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #17181a;
+      --panel: #212224;
+      --line: #55575a;
+      --line-soft: #3a3b3d;
+      --text: #ececec;
+      --text-soft: #a3a3a3;
+      --accent-note: #e0a83c;
+      --accent-note-bg: #3a300f;
+      --hatch: repeating-linear-gradient(135deg, #2b2c2e, #2b2c2e 6px, #313234 6px, #313234 12px);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17181a;
+    --panel: #212224;
+    --line: #55575a;
+    --line-soft: #3a3b3d;
+    --text: #ececec;
+    --text-soft: #a3a3a3;
+    --accent-note: #e0a83c;
+    --accent-note-bg: #3a300f;
+    --hatch: repeating-linear-gradient(135deg, #2b2c2e, #2b2c2e 6px, #313234 6px, #313234 12px);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ---- Barra de navegación del simulador ---- */
+  .tabbar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; flex-wrap: wrap; gap: 4px;
+    padding: 10px 16px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .tabbar button {
+    font-family: inherit; font-size: 13px;
+    padding: 8px 14px;
+    border: 1px solid var(--line-soft);
+    background: transparent;
+    color: var(--text-soft);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .tabbar button.active {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+  .legend {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--text-soft);
+  }
+  .legend .dot {
+    width: 10px; height: 10px; border-radius: 2px;
+    background: var(--accent-note-bg);
+    border: 1px solid var(--accent-note);
+    display: inline-block;
+  }
+
+  .screen { display: none; max-width: 1000px; margin: 0 auto; padding: 28px 20px 60px; }
+  .screen.active { display: block; }
+
+  h1, h2, h3 { font-weight: 600; margin: 0 0 6px; }
+  p { color: var(--text-soft); line-height: 1.5; margin: 0 0 10px; }
+
+  .note {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--accent-note);
+    background: var(--accent-note-bg);
+    border: 1px solid var(--accent-note);
+    border-radius: 4px;
+    padding: 2px 7px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* ---- Wireframe primitives ---- */
+  .box {
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--panel);
+  }
+  .field {
+    display: block;
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--panel);
+    color: var(--text-soft);
+    font-size: 13px;
+    font-family: inherit;
+  }
+  label.small { font-size: 11px; color: var(--text-soft); display:block; margin-bottom: 3px; }
+  .btn {
+    padding: 10px 18px;
+    border: 1px solid var(--text);
+    border-radius: 5px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn.ghost {
+    background: transparent;
+    color: var(--text);
+  }
+  .img-placeholder {
+    background: var(--hatch);
+    border: 1px solid var(--line-soft);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-soft);
+    font-size: 11px;
+  }
+
+  /* ---- Header/topbar reused across screens ---- */
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 18px; margin-bottom: 22px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .logo { font-size: 18px; font-weight: 700; }
+
+  /* ===== Home ===== */
+  .hero {
+    padding: 34px 24px;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .hero h1 { font-size: 26px; margin-bottom: 8px; }
+  .search-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: 8px;
+    max-width: 640px;
+    margin: 18px auto 0;
+    text-align: left;
+  }
+  .feat-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    margin: 14px 0 30px;
+  }
+  .card { padding: 0; overflow: hidden; }
+  .card .img-placeholder { height: 110px; border-radius: 4px 4px 0 0; border-bottom: 1px solid var(--line-soft); }
+  .card .body { padding: 10px 12px; }
+  .card .price { font-weight: 700; font-size: 14px; }
+  .value-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+    margin: 20px 0 10px; text-align: center;
+  }
+  .value-grid .ic { font-size: 20px; margin-bottom: 6px; }
+  footer.mock-footer {
+    margin-top: 30px; padding-top: 16px;
+    border-top: 1px solid var(--line-soft);
+    font-size: 12px; color: var(--text-soft);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+
+  /* ===== Login ===== */
+  .login-wrap { max-width: 360px; margin: 40px auto; }
+  .login-tabs { display: flex; gap: 0; margin-bottom: 18px; border-bottom: 1px solid var(--line-soft); }
+  .login-tabs div {
+    padding: 8px 4px; margin-right: 22px; font-size: 14px; color: var(--text-soft);
+    border-bottom: 2px solid transparent;
+  }
+  .login-tabs div.on { color: var(--text); border-color: var(--text); font-weight: 600; }
+  .login-wrap .field { margin-bottom: 14px; }
+
+  /* ===== Búsqueda ===== */
+  .filters-bar { padding: 14px; margin-bottom: 8px; }
+  .filters-row1 { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 10px; }
+  .filters-row2 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .listing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
+  .listing-grid .img-placeholder { height: 120px; border-radius: 4px 4px 0 0; }
+
+  /* ===== Detalle propiedad ===== */
+  .detail-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 22px; align-items: start; }
+  .gallery-main { height: 220px; margin-bottom: 8px; }
+  .gallery-thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 18px; }
+  .gallery-thumbs .img-placeholder { height: 48px; }
+  .spec-row { font-size: 13px; color: var(--text-soft); margin-bottom: 14px; }
+  .section-block { padding: 14px; margin-bottom: 12px; }
+  .weather-row { display: flex; gap: 10px; margin-top: 8px; }
+  .weather-day { flex: 1; text-align: center; padding: 8px 4px; border: 1px dashed var(--line-soft); border-radius: 4px; font-size: 11px; }
+  .weather-day .t { font-weight: 700; font-size: 13px; margin-top: 4px; }
+  .book-form { padding: 16px; position: sticky; top: 60px; }
+  .book-form .field { margin-bottom: 10px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .timer-banner {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--accent-note-bg);
+    border: 1px solid var(--accent-note);
+    color: var(--accent-note);
+    border-radius: 5px;
+    padding: 9px 10px;
+    font-size: 12.5px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .totals { font-size: 13px; margin: 10px 0; }
+  .totals div { display: flex; justify-content: space-between; padding: 3px 0; }
+  .totals .grand { font-weight: 700; border-top: 1px solid var(--line-soft); margin-top: 4px; padding-top: 6px; }
+
+  /* ===== Admin ===== */
+  .admin-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+  .metric { padding: 14px; text-align: center; }
+  .metric .num { font-size: 22px; font-weight: 700; }
+  .metric .lbl { font-size: 11px; color: var(--text-soft); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line-soft); }
+  th { color: var(--text-soft); font-weight: 600; font-size: 11px; text-transform: none; }
+  .pill { font-size: 11px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--line); }
+
+  @media (max-width: 720px) {
+    .feat-grid, .listing-grid, .value-grid, .metrics, .filters-row2 { grid-template-columns: repeat(2, 1fr); }
+    .detail-grid { grid-template-columns: 1fr; }
+    .search-row, .filters-row1 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tabbar">
+  <button data-tab="home" class="active">Inicio</button>
+  <button data-tab="login">Login / Registro</button>
+  <button data-tab="search">Búsqueda (Visitante)</button>
+  <button data-tab="detail">Detalle propiedad</button>
+  <button data-tab="admin">Panel Administrador</button>
+  <span class="legend"><span class="dot"></span> ajuste agregado en esta revisión</span>
+</div>
+
+<!-- ============ HOME (NUEVA) ============ -->
+<section class="screen active" id="home">
+  <div class="topbar">
+    <div class="logo">Rentify</div>
+    <button class="btn ghost">Iniciar sesión / Registrarse</button>
+  </div>
+
+  <div class="hero box">
+    <h1>Encontrá tu próxima estadía <span class="note">NUEVO</span></h1>
+    <p>Buscá y reservá propiedades sin necesidad de crear una cuenta. Solo te la pedimos al momento de reservar.</p>
+    <div class="search-row">
+      <input class="field" placeholder="Ciudad o zona">
+      <input class="field" placeholder="Fecha desde">
+      <input class="field" placeholder="Fecha hasta">
+      <button class="btn">Buscar</button>
+    </div>
+  </div>
+
+  <h3>Propiedades destacadas</h3>
+  <div class="feat-grid">
+    <div class="card box">
+      <div class="img-placeholder">imagen</div>
+      <div class="body">
+        <div>Cabaña del Lago</div>
+        <div class="price">$15.000 / noche</div>
+      </div>
+    </div>
+    <div class="card box">
+      <div class="img-placeholder">imagen</div>
+      <div class="body">
+        <div>Depto Centro</div>
+        <div class="price">$9.500 / noche</div>
+      </div>
+    </div>
+    <div class="card box">
+      <div class="img-placeholder">imagen</div>
+      <div class="body">
+        <div>Casa Quinta</div>
+        <div class="price">$22.000 / noche</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-grid">
+    <div>
+      <div class="ic">⏱</div>
+      <div><strong>Reservá en minutos</strong></div>
+      <p>Elegí fechas y confirmá con una seña.</p>
+    </div>
+    <div>
+      <div class="ic">🔒</div>
+      <div><strong>Pago seguro</strong></div>
+      <p>Procesado por una pasarela de pagos externa.</p>
+    </div>
+    <div>
+      <div class="ic">↩</div>
+      <div><strong>Cancelación flexible</strong></div>
+      <p>Hasta 72 horas antes del ingreso.</p>
+    </div>
+  </div>
+
+  <footer class="mock-footer">
+    <div>Rentify Propiedades — contacto@rentify.com</div>
+    <div>Datos del propietario (entidad Propietario)</div>
+  </footer>
+</section>
+
+<!-- ============ LOGIN ============ -->
+<section class="screen" id="login">
+  <div class="topbar">
+    <div class="logo">Rentify</div>
+  </div>
+  <div class="login-wrap box" style="padding:24px;">
+    <div class="login-tabs">
+      <div class="on">Iniciar sesión</div>
+      <div>Registrarse <span class="note">solo Cliente</span></div>
+    </div>
+    <label class="small">Email</label>
+    <input class="field" placeholder="nombre@correo.com">
+    <label class="small">Contraseña</label>
+    <input class="field" placeholder="••••••••">
+    <button class="btn" style="width:100%;">Ingresar</button>
+    <p style="margin-top:14px; font-size:12px;">El sistema deriva a la vista de Cliente o Administrador según el rol. Los Visitantes no necesitan iniciar sesión para buscar propiedades.</p>
+  </div>
+</section>
+
+<!-- ============ BÚSQUEDA (con filtros completos) ============ -->
+<section class="screen" id="search">
+  <div class="topbar">
+    <div class="logo">Rentify</div>
+    <button class="btn ghost">Iniciar sesión</button>
+  </div>
+
+  <div class="filters-bar box">
+    <div class="filters-row1">
+      <input class="field" placeholder="Buscar por ciudad o zona">
+      <input class="field" placeholder="Fecha desde">
+      <input class="field" placeholder="Fecha hasta">
+      <button class="btn">Buscar</button>
+    </div>
+    <div class="filters-row2">
+      <select class="field"><option>Rango de precio</option></select>
+      <select class="field"><option>Capacidad</option></select>
+      <select class="field"><option>Tipo de propiedad</option></select>
+      <select class="field"><option>Acepta mascotas</option></select>
+      <select class="field"><option>Disponibilidad</option></select>
+    </div>
+    <p style="margin-top:8px;">Filtros de precio y ubicación <span class="note">AGREGADO</span> — antes solo estaban capacidad, tipo y mascotas.</p>
+  </div>
+
+  <div class="listing-grid">
+    <div class="card box">
+      <div class="img-placeholder">imagen</div>
+      <div class="body"><div>Cabaña del Lago</div><div class="price">$15.000 / noche</div></div>
+    </div>
+    <div class="card box">
+      <div class="img-placeholder">imagen</div>
+      <div class="body"><div>Depto Centro</div><div class="price">$9.500 / noche</div></div>
+    </div>
+    <div class="card box">
+      <div class="img-placeholder">imagen</div>
+      <div class="body"><div>Casa Quinta</div><div class="price">$22.000 / noche</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DETALLE PROPIEDAD ============ -->
+<section class="screen" id="detail">
+  <div class="topbar">
+    <div class="logo">Rentify</div>
+    <button class="btn ghost">Iniciar sesión</button>
+  </div>
+
+  <div class="detail-grid">
+    <div>
+      <div class="img-placeholder gallery-main">imagen principal</div>
+      <div class="gallery-thumbs">
+        <div class="img-placeholder">img</div>
+        <div class="img-placeholder">img</div>
+        <div class="img-placeholder">img</div>
+        <div class="img-placeholder">img</div>
+      </div>
+
+      <h2>Cabaña del Lago</h2>
+      <div class="spec-row">4 huéspedes · 2 habitaciones · 1 baño · Acepta mascotas</div>
+
+      <div class="section-block box">
+        <h3>Descripción</h3>
+        <p>Cabaña de estilo rústico junto al lago, con parrilla y vista al agua. Ideal para escapadas de fin de semana.</p>
+      </div>
+
+      <div class="section-block box">
+        <h3>Ubicación</h3>
+        <div class="img-placeholder" style="height:120px;">mapa (Google Maps)</div>
+      </div>
+
+      <div class="section-block box">
+        <h3>Clima previsto <span class="note">NUEVO</span></h3>
+        <p>Pronóstico para las fechas seleccionadas de la reserva (servicio meteorológico externo).</p>
+        <div class="weather-row">
+          <div class="weather-day">Vie 12/10<div class="t">☀ 24°</div></div>
+          <div class="weather-day">Sáb 13/10<div class="t">⛅ 21°</div></div>
+          <div class="weather-day">Dom 14/10<div class="t">🌧 18°</div></div>
+        </div>
+      </div>
+
+      <div class="section-block box">
+        <h3>Horarios y políticas</h3>
+        <p>Check-in 15:00 · Check-out 10:00 · Cancelación hasta 72hs antes del ingreso.</p>
+      </div>
+    </div>
+
+    <div class="book-form box">
+      <h3>Reservar</h3>
+      <div class="row2">
+        <div><label class="small">Check-in</label><input class="field" placeholder="dd/mm/aaaa"></div>
+        <div><label class="small">Check-out</label><input class="field" placeholder="dd/mm/aaaa"></div>
+      </div>
+      <label class="small">Cantidad de huéspedes</label>
+      <input class="field" value="2">
+
+      <div class="totals">
+        <div><span>Total estadía</span><span>$45.000</span></div>
+        <div class="grand"><span>Seña (30%)</span><span>$13.500</span></div>
+      </div>
+
+      <div class="timer-banner">
+        ⏳ Tenés 1:30&nbsp;hs para completar el pago de la seña una vez que inicies la reserva. <span class="note" style="margin-left:auto;">NUEVO</span>
+      </div>
+
+      <button class="btn" style="width:100%;">Confirmar y pagar seña</button>
+      <p style="margin-top:8px; font-size:11px;">Si no sos Cliente todavía, te pediremos registrarte en este paso.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PANEL ADMIN ============ -->
+<section class="screen" id="admin">
+  <div class="admin-top">
+    <div>
+      <div class="logo">Rentify</div>
+      <p style="margin-top:2px;">Panel del propietario</p>
+    </div>
+    <button class="btn">+ Nueva propiedad</button>
+  </div>
+
+  <div class="metrics">
+    <div class="metric box"><div class="num">12</div><div class="lbl">Reservas activas</div></div>
+    <div class="metric box"><div class="num">68%</div><div class="lbl">Ocupación del mes</div></div>
+    <div class="metric box"><div class="num">$210.000</div><div class="lbl">Ingresos del mes</div></div>
+    <div class="metric box"><div class="num">2</div><div class="lbl">Cancelaciones</div></div>
+  </div>
+
+  <div class="box" style="padding:14px; margin-bottom:16px;">
+    <h3>Mis propiedades <span class="note">NUEVO</span></h3>
+    <table>
+      <thead><tr><th>Propiedad</th><th>Precio / noche</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody>
+        <tr><td>Cabaña del Lago</td><td>$15.000</td><td><span class="pill">Activa</span></td><td><button class="btn ghost" style="padding:5px 12px; font-size:12px;">Editar</button></td></tr>
+        <tr><td>Depto Centro</td><td>$9.500</td><td><span class="pill">Activa</span></td><td><button class="btn ghost" style="padding:5px 12px; font-size:12px;">Editar</button></td></tr>
+        <tr><td>Casa Quinta</td><td>$22.000</td><td><span class="pill">Activa</span></td><td><button class="btn ghost" style="padding:5px 12px; font-size:12px;">Editar</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box" style="padding:14px;">
+    <h3>Reservas</h3>
+    <table>
+      <thead><tr><th>Propiedad</th><th>Cliente</th><th>Fechas</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td>Cabaña del Lago</td><td>María López</td><td>12/10 - 15/10</td><td><span class="pill">Pagada</span></td></tr>
+        <tr><td>Depto Centro</td><td>Juan Pérez</td><td>20/10 - 22/10</td><td><span class="pill">Temporal</span></td></tr>
+        <tr><td>Casa Quinta</td><td>Ana Gómez</td><td>05/11 - 09/11</td><td><span class="pill">Pagada</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('.tabbar button[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tabbar button[data-tab]').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+      window.scrollTo(0,0);
+    });
+  });
+</script>
+
+</body>
+</html>
