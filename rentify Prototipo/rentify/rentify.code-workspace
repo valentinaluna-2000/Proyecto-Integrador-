@@ -1,0 +1,23 @@
+{
+  "folders": [
+    { "name": "🏡 rentify (raiz)", "path": "." },
+    { "name": "⚙️ backend (NestJS)", "path": "backend" },
+    { "name": "🖥️ frontend (Angular)", "path": "frontend" }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.angular": true
+    },
+    "editor.formatOnSave": true
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "angular.ng-template",
+      "ms-azuretools.vscode-docker"
+    ]
+  }
+}

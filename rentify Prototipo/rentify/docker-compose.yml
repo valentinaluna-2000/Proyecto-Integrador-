@@ -1,0 +1,76 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: rentify-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-rentify}
+      POSTGRES_USER: ${POSTGRES_USER:-rentify}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rentify}
+    ports:
+      - '5432:5432'
+    volumes:
+      - rentify_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-rentify}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: rentify-mailhog
+    restart: unless-stopped
+    ports:
+      - '8025:8025' # Interfaz web para ver los emails enviados (recuperacion de contrasena, confirmaciones)
+      - '1025:1025' # Puerto SMTP interno
+
+  backend:
+    build:
+      context: ./backend
+    container_name: rentify-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      BACKEND_PORT: 3000
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-rentify}
+      POSTGRES_USER: ${POSTGRES_USER:-rentify}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rentify}
+      JWT_SECRET: ${JWT_SECRET:-please-change-this-secret-in-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:4200}
+      BACKEND_URL: ${BACKEND_URL:-http://localhost:3000}
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+      MAIL_FROM: ${MAIL_FROM:-no-responder@rentify.local}
+      MERCADOPAGO_ACCESS_TOKEN: ${MERCADOPAGO_ACCESS_TOKEN:-}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
+      WEATHER_API_KEY: ${WEATHER_API_KEY:-}
+      RESERVATION_HOLD_MINUTES: ${RESERVATION_HOLD_MINUTES:-90}
+      MAX_IMAGE_SIZE_MB: ${MAX_IMAGE_SIZE_MB:-5}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@rentify.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin1234}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+    ports:
+      - '3000:3000'
+    volumes:
+      - rentify_uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: rentify-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - '4200:80'
+
+volumes:
+  rentify_postgres_data:
+  rentify_uploads:
