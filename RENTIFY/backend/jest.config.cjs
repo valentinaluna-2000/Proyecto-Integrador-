@@ -1,0 +1,1 @@
+module.exports={preset:'ts-jest',testEnvironment:'node',testMatch:['**/test/**/*.spec.ts'],testPathIgnorePatterns:['integration'],collectCoverageFrom:['src/**/*.ts','!src/persistence/migrations/**']};

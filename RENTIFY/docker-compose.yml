@@ -1,0 +1,118 @@
+x-backend: &backend
+  image: rentify-backend:local
+  build: ./backend
+  init: true
+  secrets:
+    - rentify_env
+  environment:
+    RENTIFY_ENV_FILE: /run/secrets/rentify_env
+    NODE_ENV: ${NODE_ENV:-development}
+    PORT: '3000'
+    KAFKA_BROKERS: kafka:29092
+  stop_grace_period: 30s
+
+services:
+  kafka:
+    image: apache/kafka:3.9.1
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:9092:9092'
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:29092,CONTROLLER://:9093,EXTERNAL://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    healthcheck:
+      test:
+        ['CMD-SHELL', '/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:29092 --list']
+      interval: 10s
+      timeout: 10s
+      retries: 12
+  kafka-init:
+    image: apache/kafka:3.9.1
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: ['/bin/bash', '-ec']
+    command:
+      - |
+        for topic in rentify.auth.email-verification.requested rentify.auth.password-recovery.requested rentify.notifications.dlq; do
+          /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic $$topic --partitions 3 --replication-factor 1 --config retention.ms=86400000
+        done
+  migrate:
+    <<: *backend
+    command: ['node', 'dist/persistence/initialize.js']
+    restart: 'no'
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+  seed:
+    <<: *backend
+    command: ['node', 'dist/persistence/optional-seed.js']
+    restart: 'no'
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+  backend:
+    <<: *backend
+    command: ['node', 'dist/main.js']
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:3000:3000'
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 6
+  worker:
+    <<: *backend
+    command: ['node', 'dist/worker.js']
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:4200:80'
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1/healthz']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+secrets:
+  rentify_env:
+    file: ./.env
+
+volumes:
+  kafka-data:

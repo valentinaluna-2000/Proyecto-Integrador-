@@ -1,0 +1,12 @@
+**
+!package.json
+!package-lock.json
+!tsconfig*.json
+!angular.json
+!nginx.conf
+!scripts/
+!scripts/**
+!src/
+!src/**
+!public/
+!public/**
