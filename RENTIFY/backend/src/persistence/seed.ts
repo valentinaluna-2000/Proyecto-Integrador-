@@ -16,6 +16,12 @@ import {
 import { quote } from '../common/domain';
 import { ensureStorage } from './storage-init';
 import { ensureDemoCoverage } from './seed-coverage';
+export function isValidDemoIdentity(
+  user: { email?: string | null; app_metadata?: Record<string, unknown> } | null | undefined,
+  email: string,
+) {
+  return user?.email?.toLowerCase() === email && user.app_metadata?.rentify_demo === true;
+}
 export async function runSeed() {
   if (env('NODE_ENV') !== 'development')
     throw new Error('El seed se permite únicamente en desarrollo.');
@@ -44,7 +50,14 @@ export async function runSeed() {
       const existing =
         (await source.getRepository(Administrador).findOneBy({ email })) ||
         (await source.getRepository(Cliente).findOneBy({ email }));
-      if (existing) return existing.auth_user_id;
+      if (existing) {
+        const { data, error } = await supabase.auth.admin.getUserById(existing.auth_user_id);
+        if (error || !isValidDemoIdentity(data.user, email))
+          throw new Error(
+            `El perfil local demo para ${email} no coincide con una identidad demo válida de Supabase Auth. Corregí la inconsistencia sin borrar datos.`,
+          );
+        return existing.auth_user_id;
+      }
       for (let page = 1; ; page++) {
         const { data: pageData, error: listError } = await supabase.auth.admin.listUsers({
           page,

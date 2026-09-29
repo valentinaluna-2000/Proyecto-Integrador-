@@ -46,15 +46,15 @@ export class PropertiesService implements ILogicaPropiedades {
         { desde: f.fecha_desde, hasta: f.fecha_hasta },
       );
     }
-    const rows = await q.orderBy('p.id', 'DESC').take(100).getMany();
-    return Promise.all(
-      rows.map(async (p) => ({
-        ...p,
-        imagenes: await this.db
-          .getRepository(ImagenPropiedad)
-          .find({ where: { propiedad_id: p.id }, order: { orden: 'ASC' } }),
-      })),
+    // A listing needs one cover image, not a gallery per property. Mapping the first image in
+    // the main query prevents the previous 1 + N image queries while keeping detail unchanged.
+    q.leftJoinAndMapMany(
+      'p.imagenes',
+      ImagenPropiedad,
+      'image',
+      `image.id = (SELECT i.id FROM imagenes_propiedad i WHERE i.propiedad_id=p.id ORDER BY i.orden ASC, i.id ASC LIMIT 1)`,
     );
+    return q.orderBy('p.id', 'DESC').take(100).getMany();
   }
   async get(id: number, actor?: Actor) {
     const p = actor
