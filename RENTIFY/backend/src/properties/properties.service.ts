@@ -46,8 +46,12 @@ export class PropertiesService implements ILogicaPropiedades {
         { desde: f.fecha_desde, hasta: f.fecha_hasta },
       );
     }
-    const rows = await q.orderBy('p.id', 'DESC').take(100).getMany();
-    return Promise.all(
+    const [rows, total] = await q
+      .orderBy('p.id', 'DESC')
+      .skip((f.page - 1) * f.limit)
+      .take(f.limit)
+      .getManyAndCount();
+    const items = await Promise.all(
       rows.map(async (p) => ({
         ...p,
         imagenes: await this.db
@@ -55,6 +59,17 @@ export class PropertiesService implements ILogicaPropiedades {
           .find({ where: { propiedad_id: p.id }, order: { orden: 'ASC' } }),
       })),
     );
+    return { items, total, page: f.page, limit: f.limit };
+  }
+  async options(actor: Actor) {
+    return this.db
+      .getRepository(Propiedad)
+      .createQueryBuilder('p')
+      .select('p.id', 'id')
+      .addSelect('p.nombre', 'nombre')
+      .where('p.propietario_id=:owner', { owner: actor.propietario_id })
+      .orderBy('p.nombre', 'ASC')
+      .getRawMany<{ id: number; nombre: string }>();
   }
   async get(id: number, actor?: Actor) {
     const p = actor

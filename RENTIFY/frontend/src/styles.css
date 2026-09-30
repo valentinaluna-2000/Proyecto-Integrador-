@@ -620,6 +620,17 @@ textarea:focus {
   background: var(--rentify-secondary-hover);
   color: white;
 }
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 24px auto;
+}
+.pagination span {
+  color: var(--muted);
+  text-align: center;
+}
 .costs {
   margin: 23px 0;
 }
