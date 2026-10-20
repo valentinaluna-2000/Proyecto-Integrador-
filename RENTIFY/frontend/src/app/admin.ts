@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
-import { Api, Auth, Property, message, money, dateLabel } from './core';
+import { Api, Auth, Page, Property, message, money, dateLabel } from './core';
 import { StatusComponent } from './shared';
 @Component({
   standalone: true,
@@ -107,7 +107,7 @@ export class ReportsComponent implements OnInit {
   auth = inject(Auth);
   route = inject(ActivatedRoute);
   dashboard = this.route.snapshot.data['dashboard'];
-  properties: Property[] = [];
+  properties: Pick<Property, 'id' | 'nombre'>[] = [];
   report: any;
   kind = 'performance';
   from = '';
@@ -132,7 +132,7 @@ export class ReportsComponent implements OnInit {
   }
   async ngOnInit() {
     try {
-      this.properties = await this.api.request('/admin/properties');
+      this.properties = await this.api.request("/admin/properties/options");
     } catch (e) {
       this.error = message(e);
     }
@@ -206,17 +206,44 @@ export class ReportsComponent implements OnInit {
         <p class="empty">Todavía no cargaste propiedades.</p>
       }
     </div>
+    @if (total > limit) {
+      <nav class="pagination" aria-label="Paginación de propiedades">
+        <button class="secondary" [disabled]="loading || page === 1" (click)="load(page - 1)">
+          Anterior
+        </button>
+        <span>Página {{ page }} de {{ pageCount }}</span>
+        <button class="secondary" [disabled]="loading || page >= pageCount" (click)="load(page + 1)">
+          Siguiente
+        </button>
+      </nav>
+    }
   </div>`,
 })
 export class AdminPropertiesComponent implements OnInit {
   api = inject(Api);
   rows: Property[] = [];
+  total = 0;
+  page = 1;
+  readonly limit = 12;
+  get pageCount() {
+    return Math.max(1, Math.ceil(this.total / this.limit));
+  }
   error = '';
   loading = true;
   money = money;
   async ngOnInit() {
+    await this.load();
+  }
+  async load(page = this.page) {
+    this.loading = true;
+    this.error = '';
     try {
-      this.rows = await this.api.request('/admin/properties');
+      const result = await this.api.request<Page<Property>>(
+        `/admin/properties?page=${page}&limit=${this.limit}`,
+      );
+      this.rows = result.items;
+      this.total = result.total;
+      this.page = result.page;
     } catch (e) {
       this.error = message(e);
     } finally {

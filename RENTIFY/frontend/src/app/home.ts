@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { Api, Property, message } from './core';
+import { Api, Page, Property, message } from './core';
 import { PropertyCardComponent, StatusComponent } from './shared';
 
 @Component({
@@ -60,7 +60,7 @@ export class HomeComponent implements OnInit {
   filters: Record<string, string | number> = { ubicacion: '', fecha_desde: '', fecha_hasta: '', capacidad: '' };
   async ngOnInit() {
     this.loading = true;
-    try { this.featured = (await this.api.request<Property[]>('/properties')).slice(0, 4); }
+    try { this.featured = (await this.api.request<Page<Property>>('/properties?limit=4')).items; }
     catch (error) { this.error = message(error); }
     finally { this.loading = false; }
   }

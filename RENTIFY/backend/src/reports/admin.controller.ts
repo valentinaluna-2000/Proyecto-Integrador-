@@ -2,7 +2,7 @@ import { Controller, Get, Post, Param, Query, Body, UseGuards, ParseIntPipe } fr
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard, RolesGuard, Roles, CurrentUser } from '../auth/security';
 import { Actor, Rol } from '../common/domain';
-import { ReportDto, CancelDto } from '../common/dtos';
+import { PaginationDto, ReportDto, CancelDto } from '../common/dtos';
 import { ReservationsService } from '../reservations/reservations.service';
 import { PaymentsService } from '../payments/payments.service';
 import { CancellationsService } from '../cancellations/cancellations.service';
@@ -19,8 +19,8 @@ export class AdminController {
     private cancellations: CancellationsService,
     private reports: ReportsService,
   ) {}
-  @Get('reservations') reservationsList(@CurrentUser() u: Actor) {
-    return this.reservations.list(u);
+  @Get('reservations') reservationsList(@CurrentUser() u: Actor, @Query() q: PaginationDto) {
+    return this.reservations.list(u, q);
   }
   @Get('reservations/:id') detail(@CurrentUser() u: Actor, @Param('id', ParseIntPipe) id: number) {
     return this.reservations.detail(id, u);

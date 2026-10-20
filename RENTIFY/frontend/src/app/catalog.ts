@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import Decimal from 'decimal.js';
-import { Api, Auth, Property, message, money } from './core';
+import { Api, Auth, Page, Property, message, money } from './core';
 import { PropertyCardComponent, StatusComponent } from './shared';
 import { AvailabilityCalendarComponent } from './calendar';
 @Component({
@@ -15,7 +15,7 @@ import { AvailabilityCalendarComponent } from './calendar';
           <span class="eyebrow">CATÁLOGO DE PROPIEDADES</span>
           <h1>Encontrá el lugar indicado para tu estadía.</h1>
         </div>
-        <span class="muted">{{ properties.length }} alojamientos encontrados</span>
+        <span class="muted">{{ total }} alojamientos encontrados</span>
       </div>
       <form class="search-panel" (ngSubmit)="search()">
         <label class="wide"
@@ -76,12 +76,29 @@ import { AvailabilityCalendarComponent } from './calendar';
           <app-property-card [property]="p" />
         }
       </div>
+      @if (total > limit) {
+        <nav class="pagination" aria-label="Paginación del catálogo">
+          <button class="secondary" [disabled]="loading || page === 1" (click)="loadPage(page - 1)">
+            Anterior
+          </button>
+          <span>Página {{ page }} de {{ pageCount }}</span>
+          <button class="secondary" [disabled]="loading || page >= pageCount" (click)="loadPage(page + 1)">
+            Siguiente
+          </button>
+        </nav>
+      }
     </section>`,
 })
 export class CatalogComponent implements OnInit {
   api = inject(Api);
   route = inject(ActivatedRoute);
   properties: Property[] = [];
+  total = 0;
+  page = 1;
+  readonly limit = 12;
+  get pageCount() {
+    return Math.max(1, Math.ceil(this.total / this.limit));
+  }
   loading = false;
   error = '';
   filters: Record<string, any> = { ubicacion: '', mascotas: '', menores: '' };
@@ -94,6 +111,10 @@ export class CatalogComponent implements OnInit {
     void this.search();
   }
   async search() {
+    this.page = 1;
+    await this.loadPage();
+  }
+  async loadPage(page = this.page) {
     this.loading = true;
     this.error = '';
     try {
@@ -102,7 +123,12 @@ export class CatalogComponent implements OnInit {
           .filter(([, v]) => v !== '' && v !== null && v !== undefined)
           .map(([k, v]) => [k, String(v)]),
       );
-      this.properties = await this.api.request<Property[]>(`/properties?${q}`);
+      q.set('page', String(page));
+      q.set('limit', String(this.limit));
+      const result = await this.api.request<Page<Property>>(`/properties?${q}`);
+      this.properties = result.items;
+      this.total = result.total;
+      this.page = result.page;
     } catch (e) {
       this.error = message(e);
     } finally {

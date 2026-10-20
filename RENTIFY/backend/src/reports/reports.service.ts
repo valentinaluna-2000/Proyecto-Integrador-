@@ -5,6 +5,27 @@ import Decimal from 'decimal.js';
 import { Actor, dates, ZONE } from '../common/domain';
 import { ILogicaReportes } from '../common/ports';
 import { ReportDto } from '../common/dtos';
+
+type PropertyReportRow = { id: number; nombre: string };
+type ReservationReportRow = {
+  estado: string;
+  fecha_desde: string;
+  fecha_hasta: string;
+  propiedad_id: number;
+  propiedad_nombre: string;
+  [column: string]: unknown;
+};
+type PaymentReportRow = {
+  monto: string;
+  propiedad_nombre: string;
+  [column: string]: unknown;
+};
+type CancellationReportRow = {
+  fecha: Date | string;
+  propiedad_nombre: string;
+  [column: string]: unknown;
+};
+
 export function occupancy(nights: number, available: number) {
   return available ? Math.round((nights / available) * 10000) / 100 : 0;
 }
@@ -21,26 +42,26 @@ export class ReportsService implements ILogicaReportes {
     const { nights } = dates(from, to);
     if (nights > 1096) throw new BadRequestException('El período máximo es de tres años.');
     const args = [actor.propietario_id, f.propiedad_id || null, from, to];
-    const props = await this.db.query(
+    const props = (await this.db.query(
       'SELECT id,nombre FROM propiedades WHERE propietario_id=$1 AND ($2::int IS NULL OR id=$2)',
       args.slice(0, 2),
-    );
-    const reservations = await this.db.query(
+    )) as PropertyReportRow[];
+    const reservations = (await this.db.query(
       'SELECT r.*,p.nombre AS propiedad_nombre FROM reservas r JOIN propiedades p ON p.id=r.propiedad_id WHERE p.propietario_id=$1 AND ($2::int IS NULL OR p.id=$2) AND r.fecha_desde<$4::date AND r.fecha_hasta>$3::date ORDER BY r.fecha_desde',
       args,
-    );
-    const income = await this.db.query(
+    )) as ReservationReportRow[];
+    const income = (await this.db.query(
       "SELECT pay.*,p.nombre AS propiedad_nombre FROM pagos pay JOIN reservas r ON r.id=pay.reserva_id JOIN propiedades p ON p.id=r.propiedad_id WHERE p.propietario_id=$1 AND ($2::int IS NULL OR p.id=$2) AND pay.estado='APROBADO' AND pay.fecha>=($3::date::timestamp AT TIME ZONE 'America/Argentina/Cordoba') AND pay.fecha<($4::date::timestamp AT TIME ZONE 'America/Argentina/Cordoba') ORDER BY pay.fecha",
       args,
-    );
-    const cancellations = await this.db.query(
+    )) as PaymentReportRow[];
+    const cancellations = (await this.db.query(
       "SELECT c.*,p.nombre AS propiedad_nombre FROM cancelaciones c JOIN reservas r ON r.id=c.reserva_id JOIN propiedades p ON p.id=r.propiedad_id WHERE p.propietario_id=$1 AND ($2::int IS NULL OR p.id=$2) AND c.fecha>=($3::date::timestamp AT TIME ZONE 'America/Argentina/Cordoba') AND c.fecha<($4::date::timestamp AT TIME ZONE 'America/Argentina/Cordoba') ORDER BY c.fecha",
       args,
-    );
+    )) as CancellationReportRow[];
     const occupied = reservations
-      .filter((r: any) => r.estado === 'CONFIRMADA')
+      .filter((r) => r.estado === 'CONFIRMADA')
       .reduce(
-        (sum: number, r: any) =>
+        (sum: number, r) =>
           sum +
           dates(
             r.fecha_desde < from ? from : r.fecha_desde,
@@ -49,9 +70,9 @@ export class ReportsService implements ILogicaReportes {
         0,
       );
     const summary = {
-      reservas_confirmadas: reservations.filter((r: any) => r.estado === 'CONFIRMADA').length,
+      reservas_confirmadas: reservations.filter((r) => r.estado === 'CONFIRMADA').length,
       ingresos: income
-        .reduce((sum: Decimal, p: any) => sum.plus(p.monto), new Decimal(0))
+        .reduce((sum: Decimal, p) => sum.plus(p.monto), new Decimal(0))
         .toFixed(2),
       ocupacion: occupancy(occupied, props.length * nights),
       noches_ocupadas: occupied,
@@ -65,12 +86,12 @@ export class ReportsService implements ILogicaReportes {
           ? income
           : kind === 'cancellations'
             ? cancellations
-            : props.map((p: any) => {
+            : props.map((p) => {
                 const rs = reservations.filter(
-                  (r: any) => r.propiedad_id === p.id && r.estado === 'CONFIRMADA',
+                  (r) => r.propiedad_id === p.id && r.estado === 'CONFIRMADA',
                 );
                 const count = rs.reduce(
-                  (n: number, r: any) =>
+                  (n: number, r) =>
                     n +
                     dates(
                       r.fecha_desde < from ? from : r.fecha_desde,

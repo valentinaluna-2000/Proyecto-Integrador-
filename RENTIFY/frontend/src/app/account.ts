@@ -1,8 +1,17 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, ActivatedRoute } from '@angular/router';
-import { Api, Auth, message, money, dateLabel } from './core';
+import { Api, Auth, Page, message, money, dateLabel } from './core';
 import { StatusComponent } from './shared';
+type ReservationSummary = {
+  id: number;
+  propiedad_nombre: string;
+  fecha_desde: string;
+  fecha_hasta: string;
+  cantidad_huespedes: number;
+  estado: string;
+  importe_total: string;
+};
 @Component({
   standalone: true,
   imports: [RouterLink, StatusComponent],
@@ -43,20 +52,48 @@ import { StatusComponent } from './shared';
         >
       }
     </div>
+    @if (total > limit) {
+      <nav class="pagination" aria-label="Paginación de reservas">
+        <button class="secondary" [disabled]="loading || page === 1" (click)="load(page - 1)">
+          Anterior
+        </button>
+        <span>Página {{ page }} de {{ pageCount }}</span>
+        <button class="secondary" [disabled]="loading || page >= pageCount" (click)="load(page + 1)">
+          Siguiente
+        </button>
+      </nav>
+    }
   </div>`,
 })
 export class ReservationsComponent implements OnInit {
   api = inject(Api);
   auth = inject(Auth);
   admin = this.auth.user()?.role === 'ADMINISTRADOR';
-  rows: any[] = [];
+  rows: ReservationSummary[] = [];
+  total = 0;
+  page = 1;
+  readonly limit = 20;
+  get pageCount() {
+    return Math.max(1, Math.ceil(this.total / this.limit));
+  }
   error = '';
   loading = true;
   money = money;
   date = dateLabel;
   async ngOnInit() {
+    await this.load();
+  }
+  async load(page = this.page) {
+    this.loading = true;
+    this.error = '';
     try {
-      this.rows = await this.api.request(this.admin ? '/admin/reservations' : '/reservations/me');
+      const path = this.admin ? '/admin/reservations' : '/reservations/me';
+      const result = await this.api.request<Page<ReservationSummary>>(
+        `${path}?page=${page}&limit=${this.limit}`,
+      );
+      this.rows = result.items;
+      this.total = result.total;
+      this.page = result.page;
     } catch (e) {
       this.error = message(e);
     } finally {

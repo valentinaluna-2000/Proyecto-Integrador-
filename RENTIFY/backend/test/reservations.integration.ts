@@ -12,6 +12,7 @@ import { CancellationsService } from '../src/cancellations/cancellations.service
 import { PaymentsService } from '../src/payments/payments.service';
 import { ReportsService } from '../src/reports/reports.service';
 import { Actor, Rol } from '../src/common/domain';
+import { FiltersDto } from '../src/common/dtos';
 import { env } from '../src/common/config';
 import { ensureDemoCoverage } from '../src/persistence/seed-coverage';
 types.setTypeParser(1082, (v) => v);
@@ -222,9 +223,10 @@ suite('PostgreSQL real: integridad, concurrencia y reportes', () => {
     ).rejects.toThrow();
   });
   test('visitante accede a catálogo sin datos privados', async () => {
-    const results = await properties.list({});
-    expect(results).toHaveLength(1);
-    expect(results[0]).not.toHaveProperty('cliente_id');
+    const results = await properties.list({ page: 1, limit: 12 } as FiltersDto);
+    expect(results.total).toBe(1);
+    expect(results.items).toHaveLength(1);
+    expect(results.items[0]).not.toHaveProperty('cliente_id');
   });
   test('cancelación registra un solo actor y libera rango', async () => {
     const r = await reserve();
