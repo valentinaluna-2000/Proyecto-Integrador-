@@ -20,7 +20,7 @@ export async function assertAvailable(
   excludeBlock = 0,
 ) {
   const [r] = await tx.query(
-    `SELECT EXISTS(SELECT 1 FROM reservas WHERE propiedad_id=$1 AND (estado='CONFIRMADA' OR (estado='TEMPORAL' AND fecha_vencimiento_temporal>now())) AND fecha_desde<$3::date AND fecha_hasta>$2::date) OR EXISTS(SELECT 1 FROM periodos_bloqueados WHERE propiedad_id=$1 AND id<>$4 AND fecha_desde<$3::date AND fecha_hasta>$2::date) AS occupied`,
+    `SELECT EXISTS(SELECT 1 FROM reservas WHERE propiedad_id=$1 AND (estado='CONFIRMADA' OR (estado='TEMPORAL' AND fecha_vencimiento_temporal>now())) AND fecha_desde<$3::date AND fecha_hasta>$2::date UNION ALL SELECT 1 FROM periodos_bloqueados WHERE propiedad_id=$1 AND id<>$4 AND fecha_desde<$3::date AND fecha_hasta>$2::date) AS occupied`,
     [id, from, to, excludeBlock],
   );
   if (r.occupied)

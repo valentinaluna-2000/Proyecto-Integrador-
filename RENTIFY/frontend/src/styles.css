@@ -482,6 +482,14 @@ textarea {
   margin-top: 7px;
   min-height: 47px;
 }
+textarea.expanding-textarea {
+  height: 47px;
+  min-height: 47px;
+  resize: none;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  overflow: hidden;
+}
 input:focus,
 select:focus,
 textarea:focus {
