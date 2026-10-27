@@ -7,6 +7,7 @@ import { rootCertificates } from 'tls';
 import { env, required } from '../common/config';
 import * as entities from './entities';
 import { Initial1780000000000 } from './migrations/1780000000000-Initial';
+import { BlockReservationOverlap1781000000000 } from './migrations/1781000000000-BlockReservationOverlap';
 types.setTypeParser(1082, (value) => value);
 export function makeDataSource(url = required('DATABASE_URL')) {
   const parsed = new URL(url);
@@ -30,7 +31,7 @@ export function makeDataSource(url = required('DATABASE_URL')) {
           }
         : false,
     entities: Object.values(entities),
-    migrations: [Initial1780000000000],
+    migrations: [Initial1780000000000, BlockReservationOverlap1781000000000],
     synchronize: false,
     logging: false,
     extra: { max: 10, connectionTimeoutMillis: 10000 },

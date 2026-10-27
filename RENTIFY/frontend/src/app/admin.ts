@@ -1,8 +1,30 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Directive, ElementRef, HostListener, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { Api, Auth, Property, message, money, dateLabel } from './core';
 import { StatusComponent } from './shared';
+
+@Directive({ selector: 'textarea.expanding-textarea', standalone: true })
+export class ExpandingTextareaDirective implements AfterViewInit, OnDestroy {
+  private observer?: ResizeObserver;
+  constructor(private element: ElementRef<HTMLTextAreaElement>) {}
+  ngAfterViewInit() {
+    this.resize();
+    this.observer = new ResizeObserver(() => this.resize());
+    this.observer.observe(this.element.nativeElement);
+  }
+  @HostListener('input') onInput() {
+    this.resize();
+  }
+  ngOnDestroy() {
+    this.observer?.disconnect();
+  }
+  private resize() {
+    const textarea = this.element.nativeElement;
+    textarea.style.height = '47px';
+    textarea.style.height = `${Math.max(47, textarea.scrollHeight)}px`;
+  }
+}
 @Component({
   standalone: true,
   imports: [RouterLink, StatusComponent, FormsModule],
@@ -226,7 +248,7 @@ export class AdminPropertiesComponent implements OnInit {
 }
 @Component({
   standalone: true,
-  imports: [FormsModule, RouterLink, StatusComponent],
+  imports: [FormsModule, RouterLink, StatusComponent, ExpandingTextareaDirective],
   template: `<div class="page">
     <a routerLink="/admin/propiedades" class="back">← Propiedades</a>
     <h1>{{ id ? 'Editar propiedad' : 'Nuevo lugar, nuevas historias' }}</h1>
@@ -237,7 +259,7 @@ export class AdminPropertiesComponent implements OnInit {
         <form (ngSubmit)="save()">
           <div class="form-grid">
             <label
-              >Nombre<input name="nombre" [(ngModel)]="data.nombre" required minlength="3" /></label
+              >Nombre<textarea name="nombre" [(ngModel)]="data.nombre" required minlength="3" rows="1" class="expanding-textarea"></textarea></label
             ><label
               >Tipo<select name="tipo" [(ngModel)]="data.tipo">
                 <option>casa</option>
@@ -253,11 +275,11 @@ export class AdminPropertiesComponent implements OnInit {
               [(ngModel)]="data.descripcion"
               required
               minlength="10"
-              rows="4"
+              rows="1"
+              class="expanding-textarea"
             ></textarea></label
           ><label
-            >Dirección<input name="direccion" [(ngModel)]="data.direccion" required minlength="5"
-          /></label>
+            >Dirección<textarea name="direccion" [(ngModel)]="data.direccion" required minlength="5" rows="1" class="expanding-textarea"></textarea></label>
           <div class="form-grid">
             <label
               >Latitud<input
@@ -315,6 +337,7 @@ export class AdminPropertiesComponent implements OnInit {
                 type="time"
                 [(ngModel)]="data.hora_checkout"
                 required
+                [min]="checkoutMinimum"
             /></label>
           </div>
           <div class="inline">
@@ -399,11 +422,15 @@ export class AdminPropertiesComponent implements OnInit {
                   [(ngModel)]="block.fecha_hasta"
                   required /></label
               ><label
-                >Motivo<input
+                >Motivo<textarea
                   name="block_reason"
                   [(ngModel)]="block.motivo"
                   required
-                  minlength="3" /></label
+                  minlength="3"
+                  maxlength="300"
+                  rows="1"
+                  class="expanding-textarea"
+                ></textarea></label
               ><button [disabled]="busy">
                 {{ blockId ? 'Actualizar período' : 'Bloquear fechas' }}
               </button>
@@ -461,6 +488,9 @@ export class PropertyEditorComponent implements OnInit {
   busy = false;
   error = '';
   success = '';
+  get checkoutMinimum() {
+    return this.data['hora_checkin'] >= '12:00' ? '00:00' : this.data['hora_checkin'];
+  }
   async ngOnInit() {
     if (this.id) {
       this.loading = true;
@@ -495,6 +525,11 @@ export class PropertyEditorComponent implements OnInit {
   }
   save() {
     return this.action(async () => {
+      const overnight =
+        this.data['hora_checkin'] >= '12:00' && this.data['hora_checkout'] < '12:00';
+      if (this.data['hora_checkout'] < this.data['hora_checkin'] && !overnight) {
+        throw new Error('La hora de egreso no puede ser anterior a la hora de ingreso.');
+      }
       const body = {
         ...this.data,
         precio_noche: String(this.data['precio_noche']),

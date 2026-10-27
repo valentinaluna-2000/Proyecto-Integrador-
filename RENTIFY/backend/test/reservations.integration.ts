@@ -5,6 +5,7 @@ import { randomUUID } from 'crypto';
 import { DateTime } from 'luxon';
 import * as entities from '../src/persistence/entities';
 import { Initial1780000000000 } from '../src/persistence/migrations/1780000000000-Initial';
+import { BlockReservationOverlap1781000000000 } from '../src/persistence/migrations/1781000000000-BlockReservationOverlap';
 import { ReservationsService } from '../src/reservations/reservations.service';
 import { PropertiesService } from '../src/properties/properties.service';
 import { AvailabilityService } from '../src/availability/availability.service';
@@ -34,7 +35,7 @@ suite('PostgreSQL real: integridad, concurrencia y reportes', () => {
       type: 'postgres',
       url,
       entities: Object.values(entities),
-      migrations: [Initial1780000000000],
+      migrations: [Initial1780000000000, BlockReservationOverlap1781000000000],
       synchronize: false,
     });
     await db.initialize();
@@ -193,6 +194,62 @@ suite('PostgreSQL real: integridad, concurrencia y reportes', () => {
       motivo: 'Mantenimiento',
     });
     await expect(reserve()).rejects.toThrow('disponible');
+  });
+  test('la base de datos impide insertar directamente una reserva sobre un bloqueo', async () => {
+    await properties.block(propertyId, admin, {
+      fecha_desde: from,
+      fecha_hasta: to,
+      motivo: 'Mantenimiento',
+    });
+    await expect(reserve()).rejects.toThrow('disponible');
+    const amounts = { importe_total: '300', importe_sena: '30' };
+    await expect(
+      db.getRepository(entities.Reserva).save({
+        propiedad_id: propertyId,
+        cliente_id: client.id,
+        fecha_desde: from,
+        fecha_hasta: to,
+        fecha_creacion: new Date(),
+        fecha_vencimiento_temporal: new Date(Date.now() + 90 * 60000),
+        cantidad_huespedes: 2,
+        estado: 'TEMPORAL',
+        ...amounts,
+      }),
+    ).rejects.toMatchObject({
+      driverError: expect.objectContaining({ code: '23P01' }),
+    });
+  });
+  test('el bloqueo administrativo recién guardado impide una reserva del cliente', async () => {
+    const blocked = await properties.block(propertyId, admin, {
+      fecha_desde: from,
+      fecha_hasta: to,
+      motivo: 'Mantenimiento',
+    });
+    expect(blocked.propiedad_id).toBe(propertyId);
+    await expect(reserve()).rejects.toThrow('disponible');
+  });
+  test('el bloqueo editado sigue impidiendo reservas en su nuevo rango', async () => {
+    const block = await properties.block(propertyId, admin, {
+      fecha_desde: from,
+      fecha_hasta: to,
+      motivo: 'Mantenimiento',
+    });
+    const movedFrom = DateTime.fromISO(from).plus({ days: 1 }).toISODate()!;
+    const movedTo = DateTime.fromISO(to).plus({ days: 1 }).toISODate()!;
+    await properties.block(
+      propertyId,
+      admin,
+      { fecha_desde: movedFrom, fecha_hasta: movedTo, motivo: 'Mantenimiento' },
+      block.id,
+    );
+    await expect(
+      service.create(client, {
+        propiedad_id: propertyId,
+        fecha_desde: movedFrom,
+        fecha_hasta: movedTo,
+        cantidad_huespedes: 2,
+      }),
+    ).rejects.toThrow('disponible');
   });
   test('vencimiento libera rango aunque job no se haya ejecutado', async () => {
     const r = await reserve();
