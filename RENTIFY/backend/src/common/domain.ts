@@ -30,6 +30,7 @@ export interface Actor {
   nombre: string;
   apellido: string;
   email: string;
+  telefono?: string;
 }
 export function dates(from: string, to: string) {
   const a = DateTime.fromISO(from, { zone: ZONE }),
