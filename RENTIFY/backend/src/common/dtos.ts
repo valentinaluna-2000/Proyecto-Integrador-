@@ -108,51 +108,7 @@ export class PropertyDto {
   @ApiProperty() @IsEnum(PropiedadEstado) estado!: PropiedadEstado;
 }
 export class UpdatePropertyDto extends PartialType(PropertyDto, { skipNullProperties: false }) {}
-export class PaginationDto {
-  @ApiPropertyOptional({ minimum: 1, default: 1 })
-  @ValidateIf((_object, value) => value !== undefined)
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  page = 1;
-
-  @ApiPropertyOptional({ minimum: 1, maximum: 100, default: 12 })
-  @ValidateIf((_object, value) => value !== undefined)
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  limit = 12;
-}
-
-export type PaginatedResult<T> = {
-  items: T[];
-  total: number;
-  page: number;
-  limit: number;
-};
-
-export class ReportDto {
-  @ApiPropertyOptional()
-  @ValidateIf((_object, value) => value !== undefined)
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  propiedad_id?: number;
-  @ApiPropertyOptional()
-  @ValidateIf((_object, value) => value !== undefined)
-  @IsDateString({ strict: true })
-  fecha_desde?: string;
-  @ApiPropertyOptional()
-  @ValidateIf((_object, value) => value !== undefined)
-  @IsDateString({ strict: true })
-  fecha_hasta?: string;
-}
-export class OrderDto {
-  @ApiProperty() @IsInt() @Min(0) orden!: number;
-}
-
-export class FiltersDto extends PaginationDto {
+export class FiltersDto {
   @ApiPropertyOptional()
   @ValidateIf((_object, value) => value !== undefined)
   @IsString()
@@ -192,4 +148,23 @@ export class FiltersDto extends PaginationDto {
   @ValidateIf((_object, value) => value !== undefined)
   @IsDateString({ strict: true })
   fecha_hasta?: string;
+}
+export class ReportDto {
+  @ApiPropertyOptional()
+  @ValidateIf((_object, value) => value !== undefined)
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  propiedad_id?: number;
+  @ApiPropertyOptional()
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsDateString({ strict: true })
+  fecha_desde?: string;
+  @ApiPropertyOptional()
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsDateString({ strict: true })
+  fecha_hasta?: string;
+}
+export class OrderDto {
+  @ApiProperty() @IsInt() @Min(0) orden!: number;
 }

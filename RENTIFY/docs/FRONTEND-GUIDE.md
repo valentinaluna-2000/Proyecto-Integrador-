@@ -20,7 +20,3 @@
 | Paleta/theme | `src/styles.css` |
 
 Los formularios usan `FormsModule` y `[(ngModel)]`. El calendario recibe `propertyId`, límite, ingreso y egreso; emite `selected` al detalle. Sus reglas puras son testeables sin navegador. Cambiá color mediante `--rentify-primary`, `--rentify-secondary`, `--rentify-accent` y `--rentify-background`, no agregando colores dispersos.
-
-El sistema visual completo está en `docs/design.md`; `docs/design.html` muestra sus tokens y componentes. Los tokens semánticos se declaran al inicio de `frontend/src/styles.css`; las variables `--rentify-*` se conservan como alias para los estilos existentes. La navegación del panel administrativo se adapta de lateral a horizontal en pantallas chicas.
-
-`/auth/login` y `/auth/registro` comparten `AuthPageComponent`: en escritorio, el panel de marca se desliza hacia el lado opuesto al formulario activo; en móvil, el formulario queda arriba y el control para cambiar de modo debajo. Recuperación, verificación y cambio de contraseña conservan su pantalla compacta.

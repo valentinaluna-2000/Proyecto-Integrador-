@@ -46,12 +46,8 @@ export class PropertiesService implements ILogicaPropiedades {
         { desde: f.fecha_desde, hasta: f.fecha_hasta },
       );
     }
-    const [rows, total] = await q
-      .orderBy('p.id', 'DESC')
-      .skip((f.page - 1) * f.limit)
-      .take(f.limit)
-      .getManyAndCount();
-    const items = await Promise.all(
+    const rows = await q.orderBy('p.id', 'DESC').take(100).getMany();
+    return Promise.all(
       rows.map(async (p) => ({
         ...p,
         imagenes: await this.db
@@ -59,17 +55,6 @@ export class PropertiesService implements ILogicaPropiedades {
           .find({ where: { propiedad_id: p.id }, order: { orden: 'ASC' } }),
       })),
     );
-    return { items, total, page: f.page, limit: f.limit };
-  }
-  async options(actor: Actor) {
-    return this.db
-      .getRepository(Propiedad)
-      .createQueryBuilder('p')
-      .select('p.id', 'id')
-      .addSelect('p.nombre', 'nombre')
-      .where('p.propietario_id=:owner', { owner: actor.propietario_id })
-      .orderBy('p.nombre', 'ASC')
-      .getRawMany<{ id: number; nombre: string }>();
   }
   async get(id: number, actor?: Actor) {
     const p = actor
@@ -84,13 +69,6 @@ export class PropertiesService implements ILogicaPropiedades {
     };
   }
   private money(data: UpdatePropertyDto) {
-    if (
-      data.hora_checkin !== undefined &&
-      data.hora_checkout !== undefined &&
-      data.hora_checkout < data.hora_checkin &&
-      !(data.hora_checkin >= '12:00' && data.hora_checkout < '12:00')
-    )
-      throw new BadRequestException('La hora de egreso no puede ser anterior a la hora de ingreso.');
     if (data.precio_noche !== undefined && new Decimal(data.precio_noche).lte(0))
       throw new BadRequestException('El precio debe ser mayor a cero.');
     if (
@@ -115,20 +93,12 @@ export class PropertiesService implements ILogicaPropiedades {
     return this.db.transaction(async (tx) => {
       await lockProperty(tx, id);
       const p = await owned(tx, id, actor);
-      const updated = {
+      return tx.save(Propiedad, {
         ...p,
         ...data,
         latitud: String(data.latitud ?? p.latitud),
         longitud: String(data.longitud ?? p.longitud),
-      };
-      if (
-        updated.hora_checkout < updated.hora_checkin &&
-        !(updated.hora_checkin >= '12:00' && updated.hora_checkout < '12:00')
-      )
-        throw new BadRequestException(
-          'La hora de egreso no puede ser anterior a la hora de ingreso.',
-        );
-      return tx.save(Propiedad, updated);
+      });
     });
   }
   async image(id: number, actor: Actor, file: Express.Multer.File) {

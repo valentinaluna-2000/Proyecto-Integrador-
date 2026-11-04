@@ -34,10 +34,7 @@ describe('API REST pública y protegida', () => {
         RolesGuard,
         { provide: DataSource, useValue: {} },
         { provide: IAutenticacion, useValue: {} },
-        {
-          provide: PropertiesService,
-          useValue: { list: () => ({ items: [{ id: 1, nombre: 'Casa' }], total: 1, page: 1, limit: 12 }) },
-        },
+        { provide: PropertiesService, useValue: { list: () => [{ id: 1, nombre: 'Casa' }] } },
         { provide: ReservationsService, useValue: {} },
         { provide: AvailabilityService, useValue: {} },
         { provide: ExternalService, useValue: {} },
@@ -58,7 +55,7 @@ describe('API REST pública y protegida', () => {
     request(app.getHttpServer())
       .get('/properties')
       .expect(200)
-      .expect({ items: [{ id: 1, nombre: 'Casa' }], total: 1, page: 1, limit: 12 }));
+      .expect([{ id: 1, nombre: 'Casa' }]));
   test('visitante no puede reservar', () =>
     request(app.getHttpServer()).post('/reservations').send({}).expect(401));
   test('visitante no administra propiedades', () =>
@@ -70,8 +67,4 @@ describe('API REST pública y protegida', () => {
       .expect(400));
   test('filtros inválidos producen 400', () =>
     request(app.getHttpServer()).get('/properties?capacidad=-1').expect(400));
-  test('la paginación rechaza páginas y tamaños inválidos', async () => {
-    await request(app.getHttpServer()).get('/properties?page=0').expect(400);
-    await request(app.getHttpServer()).get('/properties?limit=101').expect(400);
-  });
 });
