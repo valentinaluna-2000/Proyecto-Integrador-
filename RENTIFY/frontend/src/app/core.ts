@@ -31,12 +31,6 @@ export interface Property {
   estado: string;
   imagenes: { id: number; url: string; orden: number }[];
 }
-export interface Page<T> {
-  items: T[];
-  total: number;
-  page: number;
-  limit: number;
-}
 @Injectable({ providedIn: 'root' })
 export class Api {
   base = '/api';

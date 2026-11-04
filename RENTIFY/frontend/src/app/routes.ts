@@ -1,15 +1,5 @@
-import { Routes, UrlMatcher } from '@angular/router';
+import { Routes } from '@angular/router';
 import { authenticated, adminGuard } from './core';
-const loginRegisterMatcher: UrlMatcher = (segments) => {
-  if (
-    segments.length === 2 &&
-    segments[0].path === 'auth' &&
-    ['login', 'registro'].includes(segments[1].path)
-  ) {
-    return { consumed: segments, posParams: { mode: segments[1] } };
-  }
-  return null;
-};
 export const routes: Routes = [
   { path: '', loadComponent: () => import('./home').then((m) => m.HomeComponent) },
   { path: 'propiedades', loadComponent: () => import('./catalog').then((m) => m.CatalogComponent) },
@@ -17,11 +7,9 @@ export const routes: Routes = [
     path: 'propiedades/:id',
     loadComponent: () => import('./catalog').then((m) => m.DetailComponent),
   },
-  {
-    matcher: loginRegisterMatcher,
-    loadComponent: () => import('./auth-pages').then((m) => m.AuthPageComponent),
-  },
   ...[
+    ['login', 'login'],
+    ['registro', 'registro'],
     ['revisa-tu-correo', 'revisa'],
     ['verificado', 'verificado'],
     ['recuperar', 'recuperar'],
