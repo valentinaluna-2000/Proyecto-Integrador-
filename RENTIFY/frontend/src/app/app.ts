@@ -28,17 +28,24 @@ import { Auth } from './core';
       </div>
     </header>
     @if (auth.user()?.role === 'ADMINISTRADOR') {
-      <nav class="admin-nav" aria-label="Administración">
-        <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-          >Dashboard</a
-        ><a routerLink="/admin/propiedades" routerLinkActive="active">Propiedades</a
-        ><a routerLink="/admin/reservas" routerLinkActive="active">Reservas</a
-        ><a routerLink="/admin/pagos" routerLinkActive="active">Pagos</a
-        ><a routerLink="/admin/cancelaciones" routerLinkActive="active">Cancelaciones</a
-        ><a routerLink="/admin/reportes" routerLinkActive="active">Reportes</a>
-      </nav>
+      <div class="admin-shell">
+        <aside class="admin-sidebar">
+          <span class="admin-sidebar-label">Administración</span>
+          <nav class="admin-nav" aria-label="Administración">
+            <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+              >Dashboard</a
+            ><a routerLink="/admin/propiedades" routerLinkActive="active">Propiedades</a
+            ><a routerLink="/admin/reservas" routerLinkActive="active">Reservas</a
+            ><a routerLink="/admin/pagos" routerLinkActive="active">Pagos</a
+            ><a routerLink="/admin/cancelaciones" routerLinkActive="active">Cancelaciones</a
+            ><a routerLink="/admin/reportes" routerLinkActive="active">Reportes</a>
+          </nav>
+        </aside>
+        <div class="admin-main"><main><router-outlet /></main></div>
+      </div>
+    } @else {
+      <main><router-outlet /></main>
     }
-    <main><router-outlet /></main>
     <footer>
       <div>
         <a routerLink="/" class="brand inverse"><img src="/branding/rentify-logo.png" alt="Rentify" /></a>
