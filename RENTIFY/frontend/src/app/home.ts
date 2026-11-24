@@ -7,18 +7,25 @@ import { PropertyCardComponent, StatusComponent } from './shared';
 @Component({
   standalone: true,
   imports: [FormsModule, RouterLink, PropertyCardComponent, StatusComponent],
-  template: `<section class="home-hero">
-    <div>
-      <img class="home-logo" src="/branding/rentify-logo.png" alt="Rentify" />
+  template: `<section class="home-hero guest-home-hero">
+    <div class="guest-home-copy">
       <span class="eyebrow">ALQUILERES TEMPORARIOS EN ARGENTINA</span>
-      <h1>Encontrá tu próxima estadía.</h1>
+      <h1>Un lugar para bajar el ritmo y sentirte en casa.</h1>
       <p>Propiedades pensadas para descansar, trabajar o descubrir un lugar nuevo con tranquilidad.</p>
       <a routerLink="/propiedades" class="button">Explorar propiedades <span>↗</span></a>
     </div>
-    <img src="/house.svg" alt="Una casa entre las sierras" />
+    <a class="guest-home-visual" [routerLink]="featured[0] ? ['/propiedades', featured[0].id] : '/propiedades'" aria-label="Descubrir alojamientos">
+      <img [src]="featured[0]?.imagenes?.[0]?.url || '/house.svg'" [alt]="featured[0]?.nombre || 'Alojamientos para tu próxima estadía'" (error)="fallback($event)" />
+      @if (featured[0]; as cover) {
+        <span class="guest-home-caption"><small>UN LUGAR PARA DESCUBRIR</small><strong>{{ cover.nombre }}</strong><span>{{ cover.direccion }}</span></span>
+      } @else {
+        <span class="guest-home-caption"><small>RENTIFY · ARGENTINA</small><strong>Tu próxima estadía empieza acá</strong></span>
+      }
+      <span class="guest-home-visual-arrow" aria-hidden="true">↗</span>
+    </a>
   </section>
 
-  <section class="home-section quick-search">
+  <section class="home-section quick-search guest-quick-search">
     <div><span class="eyebrow">PLANIFICÁ TU VIAJE</span><h2>¿A dónde vamos?</h2></div>
     <form class="search-panel" (ngSubmit)="search()">
       <label class="wide">Destino<input name="ubicacion" [(ngModel)]="filters.ubicacion" placeholder="Ciudad, zona o alojamiento" /></label>
@@ -29,13 +36,13 @@ import { PropertyCardComponent, StatusComponent } from './shared';
     </form>
   </section>
 
-  <section class="home-section">
+  <section class="home-section guest-featured">
     <div class="section-heading"><div><span class="eyebrow">DESTACADOS</span><h2>Lugares para quedarte un poco más</h2></div><a routerLink="/propiedades" class="text-link">Ver todas las propiedades</a></div>
     <app-status [loading]="loading" [error]="error" />
     <div class="property-grid">@for (property of featured; track property.id) { <app-property-card [property]="property" /> }</div>
   </section>
 
-  <section class="home-section home-how">
+  <section class="home-section home-how guest-how">
     <span class="eyebrow">CÓMO FUNCIONA</span><h2>Reservá en cuatro pasos simples.</h2>
     <div class="steps">
       <article><b>01</b><h3>Buscá</h3><p>Elegí destino, fechas y cantidad de huéspedes.</p></article>
@@ -45,7 +52,7 @@ import { PropertyCardComponent, StatusComponent } from './shared';
     </div>
   </section>
 
-  <section class="home-section home-benefits">
+  <section class="home-section home-benefits guest-benefits">
     <span class="eyebrow">RENTIFY</span><h2>Todo lo que necesitás para reservar con confianza.</h2>
     <div class="benefits"><p><b>Disponibilidad actualizada</b>Fechas claras antes de reservar.</p><p><b>Reservas seguras</b>Tu operación queda registrada y protegida.</p><p><b>Propiedades verificadas</b>Información completa de cada alojamiento.</p><p><b>Detalles transparentes</b>Precio, seña y políticas a la vista.</p></div>
     <a routerLink="/propiedades" class="button">Explorar propiedades <span>↗</span></a>
@@ -67,5 +74,8 @@ export class HomeComponent implements OnInit {
   async search() {
     const queryParams = Object.fromEntries(Object.entries(this.filters).filter(([, value]) => value !== ''));
     await this.router.navigate(['/propiedades'], { queryParams });
+  }
+  fallback(event: Event) {
+    (event.target as HTMLImageElement).src = '/house.svg';
   }
 }

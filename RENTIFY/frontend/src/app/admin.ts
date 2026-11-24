@@ -28,66 +28,77 @@ export class ExpandingTextareaDirective implements AfterViewInit, OnDestroy {
 @Component({
   standalone: true,
   imports: [RouterLink, StatusComponent, FormsModule],
-  template: `<div class="page">
-    <div class="section-heading">
+  template: `<div class="page admin-view" [class.admin-dashboard]="dashboard" [class.admin-reports]="!dashboard">
+    <div class="admin-page-heading">
       <div>
-        <span class="eyebrow">ESPACIO DE ADMINISTRACIÓN</span>
+        <span class="eyebrow">{{ dashboard ? 'VISTA GENERAL' : 'ANÁLISIS DEL NEGOCIO' }}</span>
         <h1>{{ dashboard ? 'Hola, ' + auth.user()?.nombre : 'Reportes' }}</h1>
-        <p class="muted">Una mirada a tus propiedades y reservas.</p>
+        <p>{{ dashboard ? 'Una mirada clara a tus propiedades y reservas.' : 'Revisá el desempeño de tus alojamientos en el período elegido.' }}</p>
       </div>
-      <a routerLink="/admin/propiedades/nueva" class="button">Nueva propiedad +</a>
+      <a routerLink="/admin/propiedades/nueva" class="button admin-primary-action">Nueva propiedad <span aria-hidden="true">+</span></a>
     </div>
-    <form class="search-panel" (ngSubmit)="load()">
-      <label>Desde<input name="desde" type="date" [(ngModel)]="from" /></label
-      ><label>Hasta (exclusivo)<input name="hasta" type="date" [(ngModel)]="to" /></label
-      ><label
-        >Propiedad<select name="property" [(ngModel)]="propertyId">
+    <form class="search-panel admin-filters" (ngSubmit)="load()" [attr.aria-busy]="loading">
+      <div class="admin-filter-context">
+        <span class="eyebrow">PERÍODO Y ALCANCE</span>
+        <span>Elegí los datos que querés consultar.</span>
+      </div>
+      <label>Desde<input name="desde" type="date" [(ngModel)]="from" /></label>
+      <label>Hasta (exclusivo)<input name="hasta" type="date" [(ngModel)]="to" /></label>
+      <label>Propiedad
+        <select name="property" [(ngModel)]="propertyId">
           <option value="">Todas</option>
           @for (p of properties; track p.id) {
             <option [value]="p.id">{{ p.nombre }}</option>
           }
-        </select></label
-      ><label
-        >Reporte<select name="kind" [(ngModel)]="kind">
+        </select>
+      </label>
+      <label>Reporte
+        <select name="kind" [(ngModel)]="kind">
           <option value="performance">Desempeño</option>
           <option value="reservations">Reservas</option>
           <option value="income">Ingresos</option>
           <option value="occupancy">Ocupación</option>
           <option value="cancellations">Cancelaciones</option>
-        </select></label
-      ><button [disabled]="loading">Consultar</button>
+        </select>
+      </label>
+      <button [disabled]="loading">{{ loading ? 'Actualizando…' : 'Aplicar filtros' }}</button>
     </form>
     <app-status [error]="error" [loading]="loading" />
     @if (report) {
-      <div class="metric-grid">
-        <article>
-          <small>RESERVAS CONFIRMADAS</small
-          ><strong>{{ report.resumen.reservas_confirmadas }}</strong
-          ><span>En el período seleccionado</span>
-        </article>
-        <article>
-          <small>INGRESOS APROBADOS</small><strong>{{ money(report.resumen.ingresos) }}</strong
-          ><span>Pagos de señas recibidos</span>
-        </article>
-        <article>
-          <small>OCUPACIÓN</small><strong>{{ report.resumen.ocupacion }}<small>%</small></strong
-          ><span>{{ report.resumen.noches_ocupadas }} noches ocupadas</span>
-        </article>
-        <article>
-          <small>CANCELACIONES</small><strong>{{ report.resumen.cancelaciones }}</strong
-          ><span>Gestionadas en el período</span>
-        </article>
-      </div>
-      <article class="surface">
-        <h2>
-          {{
-            kind === 'occupancy' || kind === 'performance'
-              ? 'Ocupación por propiedad'
-              : 'Detalle del reporte'
-          }}
-        </h2>
+      <section class="admin-dashboard__metrics" aria-label="Indicadores del período">
+        <div class="metric-grid">
+          <article class="admin-metric admin-metric--reservations">
+            <small>RESERVAS CONFIRMADAS</small>
+            <strong>{{ report.resumen.reservas_confirmadas }}</strong>
+            <span>En el período seleccionado</span>
+          </article>
+          <article class="admin-metric admin-metric--income">
+            <small>INGRESOS APROBADOS</small>
+            <strong>{{ money(report.resumen.ingresos) }}</strong>
+            <span>Pagos de señas recibidos</span>
+          </article>
+          <article class="admin-metric admin-metric--occupancy">
+            <small>OCUPACIÓN</small>
+            <strong>{{ report.resumen.ocupacion }}<small>%</small></strong>
+            <span>{{ report.resumen.noches_ocupadas }} noches ocupadas</span>
+          </article>
+          <article class="admin-metric admin-metric--cancellations">
+            <small>CANCELACIONES</small>
+            <strong>{{ report.resumen.cancelaciones }}</strong>
+            <span>Gestionadas en el período</span>
+          </article>
+        </div>
+      </section>
+      <article class="surface admin-dashboard__report-card">
+        <div class="admin-report-heading">
+          <div>
+            <span class="eyebrow">{{ kind === 'occupancy' || kind === 'performance' ? 'LECTURA DE OCUPACIÓN' : 'DETALLE' }}</span>
+            <h2>{{ kind === 'occupancy' || kind === 'performance' ? 'Ocupación por propiedad' : 'Detalle del reporte' }}</h2>
+          </div>
+          <span class="admin-report-context">{{ dashboard ? 'Datos del período seleccionado' : 'Resultados filtrados' }}</span>
+        </div>
         @if (kind === 'occupancy' || kind === 'performance') {
-          <div class="chart">
+          <div class="chart admin-occupancy-chart" aria-label="Ocupación por propiedad">
             @for (row of report.filas; track $index) {
               <div class="bar-row">
                 <span>{{ row.propiedad }}</span>
@@ -118,7 +129,7 @@ export class ExpandingTextareaDirective implements AfterViewInit, OnDestroy {
           </table>
         </div>
         @if (!report.filas.length) {
-          <p class="empty">No hay datos para el período elegido.</p>
+          <p class="empty">No hay datos para el período elegido. Probá con otras fechas o propiedades.</p>
         }
       </article>
     }
@@ -185,7 +196,7 @@ export class ReportsComponent implements OnInit {
 @Component({
   standalone: true,
   imports: [RouterLink, StatusComponent],
-  template: `<div class="page">
+  template: `<div class="page admin-properties-page">
     <div class="section-heading">
       <div>
         <span class="eyebrow">TUS ALOJAMIENTOS</span>
@@ -209,15 +220,17 @@ export class ReportsComponent implements OnInit {
         <tbody>
           @for (p of rows; track p.id) {
             <tr>
-              <td>
-                <strong>{{ p.nombre }}</strong
+              <td class="admin-property-name">
+                <img [src]="p.imagenes[0]?.url || '/house.svg'" [alt]="'Imagen de ' + p.nombre" loading="lazy" />
+                <span><strong>{{ p.nombre }}</strong
                 ><small class="muted">{{ p.direccion }}</small>
+                </span>
               </td>
               <td>{{ p.capacidad }} personas</td>
               <td>{{ money(p.precio_noche) }}</td>
               <td>{{ p.porcentaje_sena }}%</td>
               <td>
-                <span class="badge">{{ p.estado }}</span>
+                <span class="badge" [attr.data-state]="p.estado">{{ p.estado === 'ACTIVA' ? 'Activa' : 'Inactiva' }}</span>
               </td>
               <td><a [routerLink]="['/admin/propiedades', p.id]">Editar →</a></td>
             </tr>
@@ -276,14 +289,14 @@ export class AdminPropertiesComponent implements OnInit {
 @Component({
   standalone: true,
   imports: [FormsModule, RouterLink, StatusComponent, ExpandingTextareaDirective],
-  template: `<div class="page">
+  template: `<div class="page property-editor-page">
     <a routerLink="/admin/propiedades" class="back">← Propiedades</a>
     <h1>{{ id ? 'Editar propiedad' : 'Nuevo lugar, nuevas historias' }}</h1>
     <app-status [loading]="loading" [error]="error" [success]="success" />
     <div class="editor-layout">
       <article class="surface">
         <h2>Información del alojamiento</h2>
-        <form (ngSubmit)="save()">
+        <form #propertyForm="ngForm" (ngSubmit)="propertyForm.valid && save()">
           <div class="form-grid">
             <label
               >Nombre<textarea name="nombre" [(ngModel)]="data.nombre" required minlength="3" rows="1" class="expanding-textarea"></textarea></label
@@ -402,7 +415,7 @@ export class AdminPropertiesComponent implements OnInit {
               <option value="ACTIVA">Activa</option>
               <option value="INACTIVA">Inactiva</option>
             </select></label
-          ><button [disabled]="busy">Guardar propiedad</button>
+          ><button [disabled]="busy || propertyForm.invalid">Guardar propiedad</button>
         </form>
       </article>
       @if (id) {
@@ -435,7 +448,7 @@ export class AdminPropertiesComponent implements OnInit {
           </article>
           <article class="surface">
             <h2>Períodos bloqueados</h2>
-            <form (ngSubmit)="saveBlock()">
+            <form #blockForm="ngForm" (ngSubmit)="blockForm.valid && saveBlock()">
               <label
                 >Desde<input
                   type="date"
@@ -458,7 +471,7 @@ export class AdminPropertiesComponent implements OnInit {
                   rows="1"
                   class="expanding-textarea"
                 ></textarea></label
-              ><button [disabled]="busy">
+              ><button [disabled]="busy || blockForm.invalid">
                 {{ blockId ? 'Actualizar período' : 'Bloquear fechas' }}
               </button>
               @if (blockId) {
@@ -628,7 +641,7 @@ export class PropertyEditorComponent implements OnInit {
 @Component({
   standalone: true,
   imports: [RouterLink, StatusComponent],
-  template: `<div class="page">
+  template: `<div class="page transactions-page">
     <span class="eyebrow">GESTIÓN</span>
     <h1>{{ payments ? 'Pagos' : 'Cancelaciones' }}</h1>
     <app-status [error]="error" [loading]="loading" />
@@ -662,7 +675,7 @@ export class PropertyEditorComponent implements OnInit {
               @if (payments) {
                 <td>{{ money(r.monto) }}</td>
                 <td>
-                  <span class="badge">{{ r.estado }}</span>
+                  <span class="badge" [attr.data-state]="r.estado">{{ r.estado }}</span>
                 </td>
                 <td>{{ r.requiere_revision ? 'Requiere conciliación' : '—' }}</td>
               } @else {

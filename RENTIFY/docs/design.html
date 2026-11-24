@@ -6,64 +6,41 @@
     <title>Rentify · Sistema visual</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --color-primary: #28396c;
-        --color-on-primary: #ffffff;
-        --color-primary-hover: #1e2d5a;
-        --color-accent: #b9d175;
-        --color-accent-hover: #a5be5e;
-        --color-on-accent: #28396c;
-        --color-surface: #ffffff;
-        --color-surface-soft: #d9efbd;
-        --color-background: #f5fbda;
-        --color-on-surface: #28396c;
-        --color-text-secondary: #4c5874;
-        --color-border: #d8dfc4;
-        --color-disabled: #737963;
-        --color-disabled-surface: #e8ecd9;
-        --color-success: #285b3e;
-        --color-success-surface: #d9efbd;
-        --color-warning: #70541b;
-        --color-warning-surface: #f6edcf;
-        --color-error: #963e45;
-        --color-error-surface: #f8e9e8;
-        --color-focus: #28396c;
-        --font-heading: "Manrope", sans-serif;
-        --font-body: "DM Sans", sans-serif;
-        --size-display: 60px;
-        --weight-display: 500;
-        --line-display: 1.08;
-        --letter-display: -.045em;
-        --size-h1: 40px;
-        --weight-h1: 600;
-        --line-h1: 1.16;
-        --letter-h1: -.045em;
-        --size-h2: 28px;
-        --weight-h2: 600;
-        --line-h2: 1.2;
-        --size-h3: 20px;
-        --weight-h3: 600;
-        --line-h3: 1.3;
-        --size-body: 16px;
-        --weight-body: 400;
-        --line-body: 1.65;
-        --size-small: 14px;
-        --weight-small: 400;
-        --line-small: 1.5;
-        --size-caption: 12px;
-        --weight-caption: 600;
-        --line-caption: 1.4;
-        --letter-caption: .04em;
-        --size-button: 14px;
-        --weight-button: 600;
-        --line-button: 1.2;
+        --forest: #173b32;
+        --forest-hover: #102e27;
+        --secondary: #285b4a;
+        --sage: #a8c8b8;
+        --accent: #d9a441;
+        --accent-hover: #c48e2b;
+        --surface: #fff;
+        --surface-soft: #e8f0ec;
+        --canvas: #f4f7f5;
+        --ink: #25332f;
+        --muted: #66736b;
+        --border: #e2e9e5;
+        --success: #285b4a;
+        --success-surface: #e5f0ea;
+        --warning: #785a1a;
+        --warning-surface: #f8efd9;
+        --error: #963e45;
+        --error-surface: #f8e9e8;
+        --blocked: #59645e;
+        --blocked-surface: #e9eeeb;
+        --display: 60px;
+        --h1: 40px;
+        --h2: 28px;
+        --h3: 20px;
+        --body: 16px;
+        --small: 14px;
+        --caption: 12px;
         --radius-sm: 8px;
         --radius-md: 12px;
         --radius-lg: 18px;
         --radius-xl: 24px;
-        --radius-pill: 999px;
+        --pill: 999px;
         --space-1: 4px;
         --space-2: 8px;
         --space-3: 12px;
@@ -71,174 +48,134 @@
         --space-6: 24px;
         --space-8: 32px;
         --space-12: 48px;
-        --space-control: 44px;
-        --shadow-card: 0 10px 30px rgb(40 57 108 / 8%);
-        --motion-fast: 180ms;
-        --motion-standard: 260ms;
-        --motion-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+        --control: 44px;
+        --shadow: 0 10px 30px rgb(23 59 50 / 8%);
+        --fast: 180ms;
+        --standard: 260ms;
+        --ease-out: cubic-bezier(.2, .8, .2, 1);
+        font: 400 var(--body)/1.6 Manrope, sans-serif;
+        color: var(--ink);
+        background: var(--canvas);
       }
       * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        background: var(--color-background);
-        color: var(--color-on-surface);
-        font: var(--weight-body) var(--size-body)/var(--line-body) var(--font-body);
-      }
-      main { max-width: 1080px; margin: auto; padding: 40px 24px 72px; }
-      h1, h2, h3 { font-family: var(--font-heading); line-height: 1.2; }
-      h1 { font-size: clamp(32px, 5vw, var(--size-display)); line-height: 1.08; margin: 8px 0; }
-      h2 { font-size: var(--size-h2); margin: 0 0 18px; }
-      h3 { font-size: var(--size-h3); margin: 0 0 8px; }
-      p { max-width: 70ch; margin: 8px 0 18px; color: var(--color-text-secondary); }
-      section { padding: 32px 0; border-top: 1px solid var(--color-border); }
-      .eyebrow { color: var(--color-primary); font-size: var(--size-caption); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-      .swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
-      .swatch { min-height: 116px; padding: 16px; border: 1px solid var(--color-border); border-radius: var(--radius-md); display: flex; flex-direction: column; justify-content: space-between; }
-      .swatch b { font-size: 14px; }
-      .swatch code { font-size: 12px; }
-      .navy { background: var(--color-primary); color: var(--color-on-primary); }
-      .primary-hover { background: var(--color-primary-hover); color: var(--color-on-primary); }
-      .green { background: var(--color-accent); color: var(--color-on-accent); }
-      .accent-hover { background: var(--color-accent-hover); color: var(--color-on-accent); }
-      .soft { background: var(--color-surface-soft); color: var(--color-on-surface); }
-      .canvas { background: var(--color-background); color: var(--color-on-surface); }
-      .surface { background: var(--color-surface); color: var(--color-on-surface); }
-      .secondary-text { background: var(--color-surface); color: var(--color-text-secondary); }
-      .border-token { background: var(--color-surface); color: var(--color-on-surface); border: 3px solid var(--color-border); }
-      .focus-token { background: var(--color-surface); color: var(--color-focus); outline: 3px solid var(--color-focus); outline-offset: -5px; }
-      .specimen { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 20px; margin: 10px 0; }
-      .type-display { font: var(--weight-display) var(--size-display)/var(--line-display) var(--font-heading); letter-spacing: var(--letter-display); }
-      .type-h1 { font: var(--weight-h1) var(--size-h1)/var(--line-h1) var(--font-heading); letter-spacing: var(--letter-h1); }
-      .type-h2 { font: var(--weight-h2) var(--size-h2)/var(--line-h2) var(--font-heading); }
-      .type-h3 { font: var(--weight-h3) var(--size-h3)/var(--line-h3) var(--font-heading); }
-      .type-body { font: var(--weight-body) var(--size-body)/var(--line-body) var(--font-body); }
-      .type-small { font: var(--weight-small) var(--size-small)/var(--line-small) var(--font-body); }
-      .type-caption { font: var(--weight-caption) var(--size-caption)/var(--line-caption) var(--font-body); letter-spacing: var(--letter-caption); }
-      .scale { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; }
-      .scale div { width: 90px; }
-      .scale i { display: block; height: 12px; background: var(--color-accent); border-radius: var(--radius-pill); margin-bottom: 7px; }
-      .radii { display: flex; flex-wrap: wrap; gap: 14px; }
-      .radius { width: 125px; height: 75px; display: grid; place-items: center; background: var(--color-surface-soft); border: 1px solid var(--color-border); font-size: var(--size-caption); }
-      .radius-sm { border-radius: var(--radius-sm); }
-      .radius-md { border-radius: var(--radius-md); }
-      .radius-lg { border-radius: var(--radius-lg); }
-      .radius-xl { border-radius: var(--radius-xl); }
-      .radius-pill { border-radius: var(--radius-pill); }
-      .depth { display: flex; flex-wrap: wrap; gap: 20px; }
-      .depth-card { width: min(100%, 280px); min-height: 100px; padding: 20px; border-radius: var(--radius-lg); background: var(--color-surface); border: 1px solid var(--color-border); box-shadow: var(--shadow-card); transition: transform var(--motion-standard) var(--motion-ease-out), box-shadow var(--motion-standard) ease; }
-      .depth-card:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgb(40 57 108 / 14%); }
-      .components { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-      .component { padding: 20px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
-      .button { display: inline-flex; min-height: var(--space-control); align-items: center; justify-content: center; border: 0; border-radius: var(--radius-md); padding: 12px 20px; font: var(--weight-button) var(--size-button)/var(--line-button) var(--font-body); text-decoration: none; cursor: pointer; }
-      .button-primary { background: var(--color-primary); color: var(--color-on-primary); }
-      .button-accent { background: var(--color-accent); color: var(--color-on-accent); }
-      .button-hover { background: var(--color-primary-hover); color: var(--color-on-primary); }
-      .button-accent-hover { background: var(--color-accent-hover); color: var(--color-on-accent); }
-      .field { width: 100%; min-height: 47px; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-on-surface); background: var(--color-surface); font: inherit; }
-      .badge { display: inline-block; padding: 8px 11px; border-radius: var(--radius-pill); font-size: var(--size-caption); font-weight: 700; }
-      .success { background: var(--color-success-surface); color: var(--color-success); }
-      .warning { background: var(--color-warning-surface); color: var(--color-warning); }
-      .error { background: var(--color-error-surface); color: var(--color-error); }
-      .nav-sample { display: flex; flex-direction: column; gap: 6px; max-width: 240px; padding: 12px; background: var(--color-surface-soft); border-radius: var(--radius-md); }
-      .nav-sample span { padding: 10px 12px; border-radius: var(--radius-md); font-size: var(--size-small); }
-      .nav-sample .active { color: var(--color-on-primary); background: var(--color-primary); }
-      .property-preview { overflow: hidden; padding: 0; }
-      .property-image { height: 125px; background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); }
-      .property-copy { padding: var(--space-6); }
-      .booking-preview { border-radius: var(--radius-xl); padding: 28px; }
-      .booking-preview dl { display: flex; justify-content: space-between; padding: 10px 0; margin: 0; border-bottom: 1px solid var(--color-border); }
-      .booking-preview dd { margin: 0; font-weight: 700; }
-      .auth-preview { display: grid; grid-template-columns: 1.15fr .85fr; min-height: 180px; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-xl); background: var(--color-surface); }
-      .auth-preview-form { display: flex; flex-direction: column; justify-content: center; padding: var(--space-4); }
-      .auth-preview-promo { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: var(--space-4); border-radius: 100px 0 0 100px; background: var(--color-primary); color: var(--color-on-primary); }
-      .auth-preview-promo p { color: var(--color-surface-soft); font-size: var(--size-caption); line-height: var(--line-caption); }
-      .auth-preview-promo .button { min-height: var(--space-control); padding: 8px 12px; font-size: var(--size-caption); }
-      .dos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
-      .dos ul { padding-left: 22px; color: var(--color-text-secondary); }
-      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
-      @media (max-width: 420px) { main { padding: 28px 16px 48px; } .type-display { font-size: 40px; } }
+      body { margin: 0; }
+      main { max-width: 1120px; margin: auto; padding: 40px 24px 72px; }
+      h1, h2, h3 { font-family: Manrope, sans-serif; line-height: 1.2; }
+      h1 { font-size: clamp(32px, 5vw, var(--display)); margin: 8px 0; letter-spacing: -.045em; }
+      h2 { font-size: var(--h2); margin: 0 0 18px; }
+      h3 { font-size: var(--h3); margin: 0 0 8px; }
+      p { max-width: 70ch; margin: 8px 0 18px; color: var(--muted); }
+      section { padding: 32px 0; border-top: 1px solid var(--border); }
+      .eyebrow { color: var(--secondary); font-size: var(--caption); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+      .swatches, .components { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+      .swatch { min-height: 108px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md); display: flex; flex-direction: column; justify-content: space-between; }
+      .swatch code { font-size: var(--caption); }
+      .forest { background: var(--forest); color: white; }
+      .forest-hover { background: var(--forest-hover); color: white; }
+      .sage { background: var(--sage); color: var(--ink); }
+      .accent { background: var(--accent); color: var(--ink); }
+      .soft { background: var(--surface-soft); color: var(--ink); }
+      .canvas { background: var(--canvas); color: var(--ink); }
+      .surface { background: var(--surface); color: var(--ink); }
+      .secondary-copy { background: white; color: var(--muted); }
+      .specimen, .component { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 10px 0; box-shadow: var(--shadow); }
+      .type-display { font-size: var(--display); font-weight: 500; letter-spacing: -.045em; }
+      .type-h1 { font-size: var(--h1); font-weight: 600; }
+      .type-h2 { font-size: var(--h2); font-weight: 600; }
+      .type-h3 { font-size: var(--h3); font-weight: 600; }
+      .scale { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+      .scale i { display: block; height: 10px; background: var(--sage); border-radius: var(--pill); margin-bottom: 7px; }
+      .radius-samples { display: flex; flex-wrap: wrap; gap: 12px; }
+      .radius-samples span { width: 110px; height: 66px; display: grid; place-items: center; background: var(--surface-soft); border: 1px solid var(--border); }
+      .r-sm { border-radius: var(--radius-sm); } .r-md { border-radius: var(--radius-md); }
+      .r-lg { border-radius: var(--radius-lg); } .r-xl { border-radius: var(--radius-xl); } .r-pill { border-radius: var(--pill); }
+      .components { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+      button { min-height: var(--control); border: 0; border-radius: var(--radius-md); padding: 10px 18px; background: var(--forest); color: white; font: 600 var(--small) Manrope, sans-serif; cursor: pointer; transition: transform var(--fast) var(--ease-out), background var(--fast), box-shadow var(--fast); }
+      button:hover { background: var(--forest-hover); box-shadow: var(--shadow); transform: translateY(-1px); }
+      button:active { transform: translateY(1px); }
+      button:focus-visible, input:focus-visible { outline: 3px solid var(--secondary); outline-offset: 3px; }
+      .button-accent { background: var(--accent); color: var(--ink); }
+      .button-accent:hover { background: var(--accent-hover); color: var(--ink); }
+      input { width: 100%; min-height: 47px; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; color: var(--ink); font: inherit; }
+      .badge { display: inline-flex; padding: 7px 10px; border-radius: var(--pill); font-size: var(--caption); font-weight: 700; }
+      .good { color: var(--success); background: var(--success-surface); }
+      .waiting { color: var(--warning); background: var(--warning-surface); }
+      .blocked { color: var(--blocked); background: var(--blocked-surface); }
+      .cancelled { color: var(--error); background: var(--error-surface); }
+      .audiences { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+      .audiences article { padding: 24px; border-radius: var(--radius-lg); }
+      .guest { background: var(--surface); border: 1px solid var(--border); }
+      .owner { background: var(--forest); color: white; }
+      .owner p { color: #e3ece7; }
+      .dashboard-sample { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+      .dashboard-sample article { padding: 16px; border: 1px solid var(--border); background: white; border-radius: var(--radius-md); }
+      .dashboard-sample article:first-child { background: var(--forest); color: white; }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+      @media (max-width: 620px) { main { padding: 28px 16px 48px; } .type-display { font-size: 40px; } .audiences { grid-template-columns: 1fr; } .dashboard-sample { grid-template-columns: 1fr 1fr; } }
     </style>
   </head>
   <body>
     <main>
       <header>
         <span class="eyebrow">Rentify · Sistema visual</span>
-        <h1>Una estadía empieza con confianza.</h1>
-        <p>Guía visual para descubrir alojamientos y gestionar reservas. Es el espejo legible de <code>docs/design.md</code>.</p>
+        <h1>Precisión operativa. Calidez hospitalaria.</h1>
+        <p>Una identidad compartida para la experiencia de huéspedes y propietarios, con composiciones pensadas para cada tarea.</p>
       </header>
       <section>
-        <h2>Colores</h2>
+        <h2>Paleta</h2>
         <div class="swatches">
-          <div class="swatch navy"><b>primary · on-primary</b><code>#28396C · #FFFFFF</code></div>
-          <div class="swatch primary-hover"><b>primary-hover</b><code>#1E2D5A</code></div>
-          <div class="swatch green"><b>accent · on-accent</b><code>#B9D175 · #28396C</code></div>
-          <div class="swatch accent-hover"><b>accent-hover</b><code>#A5BE5E</code></div>
-          <div class="swatch soft"><b>surface-soft</b><code>#D9EFBD</code></div>
-          <div class="swatch canvas"><b>background</b><code>#F5FBDA</code></div>
-          <div class="swatch surface"><b>surface · on-surface</b><code>#FFFFFF · #28396C</code></div>
-          <div class="swatch secondary-text"><b>text-secondary</b><code>#4C5874 sobre blanco</code></div>
-          <div class="swatch border-token"><b>border</b><code>#D8DFC4</code></div>
-          <div class="swatch focus-token"><b>focus</b><code>#28396C</code></div>
-          <div class="swatch" style="background:var(--color-disabled-surface);color:var(--color-disabled)"><b>disabled</b><code>#737963 sobre #E8ECD9</code></div>
-          <div class="swatch success"><b>success</b><code>#285B3E sobre #D9EFBD</code></div>
-          <div class="swatch warning"><b>warning</b><code>#70541B sobre #F6EDCF</code></div>
-          <div class="swatch error"><b>error</b><code>#963E45 sobre #F8E9E8</code></div>
+          <div class="swatch forest"><b>primary</b><code>#173B32</code></div>
+          <div class="swatch forest-hover"><b>primary-hover</b><code>#102E27</code></div>
+          <div class="swatch"><b>secondary</b><code>#285B4A</code></div>
+          <div class="swatch sage"><b>sage</b><code>#A8C8B8</code></div>
+          <div class="swatch accent"><b>accent · on-accent</b><code>#D9A441 · #25332F</code></div>
+          <div class="swatch soft"><b>surface-soft</b><code>#E8F0EC</code></div>
+          <div class="swatch canvas"><b>background</b><code>#F4F7F5</code></div>
+          <div class="swatch surface"><b>surface · on-surface</b><code>#FFFFFF · #25332F</code></div>
+          <div class="swatch secondary-copy"><b>accessible body copy</b><code>#66736B</code></div>
+          <div class="swatch"><b>border · focus</b><code>#E2E9E5 · #173B32</code></div>
+          <div class="swatch good"><b>paid / available</b><code>#285B4A sobre #E5F0EA</code></div>
+          <div class="swatch waiting"><b>pending</b><code>#785A1A sobre #F8EFD9</code></div>
+          <div class="swatch blocked"><b>blocked</b><code>#59645E sobre #E9EEEB</code></div>
+          <div class="swatch cancelled"><b>cancelled</b><code>#963E45 sobre #F8E9E8</code></div>
+        </div>
+      </section>
+      <section>
+        <h2>Una marca, dos experiencias</h2>
+        <div class="audiences">
+          <article class="guest"><span class="eyebrow">HUÉSPEDES</span><h3>Visual, cercana y clara</h3><p>Fotografía, búsqueda y decisiones de reserva con datos transparentes.</p></article>
+          <article class="owner"><span class="eyebrow">PROPIETARIOS</span><h3>Operativa y enfocada</h3><p>Lectura rápida de métricas, filtros y acciones frecuentes del negocio.</p></article>
         </div>
       </section>
       <section>
         <h2>Tipografía</h2>
-        <div class="specimen type-display">Una escapada para recordar</div>
-        <div class="specimen type-h1">Encontrá tu próximo lugar</div>
-        <div class="specimen type-h2">Detalles de la estadía</div>
-        <div class="specimen type-h3">Bosque y Montaña</div>
-        <div class="specimen type-body">DM Sans mantiene cómodos los formularios, las fechas y los detalles de cada alojamiento.</div>
-        <div class="specimen type-small">Texto secundario · Una guía clara durante todo el recorrido.</div>
-        <div class="specimen type-caption">RESERVA CONFIRMADA · MANROPE + DM SANS</div>
+        <div class="specimen type-display">Una estadía empieza con confianza</div>
+        <div class="specimen type-h1">Vista general del negocio</div>
+        <div class="specimen type-h2">Próximas reservas</div>
+        <div class="specimen type-h3">Brisa del Mar</div>
+        <div class="specimen">Manrope mantiene una voz consistente en títulos, formularios, fechas y métricas.</div>
       </section>
       <section>
-        <h2>Espaciado</h2>
+        <h2>Espaciado y forma</h2>
         <div class="scale">
-          <div><i style="width:var(--space-1)"></i><code>space-1 · 4px</code></div>
-          <div><i style="width:var(--space-2)"></i><code>space-2 · 8px</code></div>
-          <div><i style="width:var(--space-3)"></i><code>space-3 · 12px</code></div>
-          <div><i style="width:var(--space-4)"></i><code>space-4 · 16px</code></div>
-          <div><i style="width:var(--space-6)"></i><code>space-6 · 24px</code></div>
-          <div><i style="width:var(--space-8)"></i><code>space-8 · 32px</code></div>
-          <div><i style="width:var(--space-12)"></i><code>space-12 · 48px</code></div>
+          <div><i style="width:var(--space-1)"></i><code>4px</code></div><div><i style="width:var(--space-2)"></i><code>8px</code></div>
+          <div><i style="width:var(--space-3)"></i><code>12px</code></div><div><i style="width:var(--space-4)"></i><code>16px</code></div>
+          <div><i style="width:var(--space-6)"></i><code>24px</code></div><div><i style="width:var(--space-8)"></i><code>32px</code></div><div><i style="width:var(--space-12)"></i><code>48px</code></div>
         </div>
+        <div class="radius-samples"><span class="r-sm">8px</span><span class="r-md">12px</span><span class="r-lg">18px</span><span class="r-xl">24px</span><span class="r-pill">pill</span></div>
       </section>
       <section>
-        <h2>Radio</h2>
-        <div class="radii">
-          <div class="radius radius-sm">sm · 8px</div><div class="radius radius-md">md · 12px</div>
-          <div class="radius radius-lg">lg · 18px</div><div class="radius radius-xl">xl · 24px</div>
-          <div class="radius radius-pill">pill</div>
-        </div>
-      </section>
-      <section>
-        <h2>Profundidad</h2>
-        <div class="depth"><article class="depth-card"><b>Card</b><p>Borde suave y sombra azul tenue. Al pasar el cursor, sube apenas para dar respuesta.</p></article></div>
-        <p>Las microinteracciones usan 180–260 ms, entrada de contenido de 340 ms y se desactivan con <code>prefers-reduced-motion</code>.</p>
-      </section>
-      <section>
-        <h2>Componentes</h2>
+        <h2>Componentes e interacción</h2>
         <div class="components">
-          <article class="component"><h3>Acciones</h3><p>Una acción principal por vista; la secundaria conserva menor peso visual.</p><button class="button button-primary">Reservar estadía</button> <button class="button button-accent">Ver fechas</button></article>
-          <article class="component"><h3>Campo de búsqueda</h3><p>Etiqueta visible y superficie clara para facilitar el reconocimiento.</p><label for="sample-location">Ubicación</label><input id="sample-location" class="field" value="Mar del Plata" /></article>
-          <article class="component"><h3>Acceso y registro</h3><div class="auth-preview"><div class="auth-preview-form"><b>Iniciá sesión</b><small>Continuá con tus reservas.</small><input class="field" aria-label="Correo de muestra" placeholder="Correo electrónico" /></div><div class="auth-preview-promo"><b>¿Todavía no tenés cuenta?</b><p>Creá tu espacio Rentify.</p><button class="button button-accent">Registrarme ↗</button></div></div></article>
-          <article class="component"><h3>Estados de reserva</h3><p>El texto acompaña el color en todos los estados.</p><span class="badge success">✓ Confirmada</span> <span class="badge warning">Pendiente</span> <span class="badge error">Cancelada</span></article>
-          <article class="component property-preview"><div class="property-image" aria-hidden="true"></div><div class="property-copy"><h3>Tarjeta de alojamiento</h3><p>Mar del Plata · 3 huéspedes</p><b>$58.000 <small>/ noche</small></b></div></article>
-          <article class="component booking-preview"><h3>Resumen de reserva</h3><p>Brisa del Mar · Confirmada</p><dl><dt>Ingreso</dt><dd>15 dic</dd></dl><dl><dt>Egreso</dt><dd>20 dic</dd></dl><p><button class="button button-accent">Ver reserva</button></p></article>
-          <article class="component"><h3>Navegación de administración</h3><div class="nav-sample"><span class="active">Dashboard</span><span>Propiedades</span><span>Reservas</span></div></article>
-          <article class="component"><h3>Acciones en estado hover</h3><button class="button button-hover">Acción principal</button> <button class="button button-accent-hover">Acción verde</button></article>
+          <article class="component"><h3>Acciones</h3><p>Una acción primaria; el acento cálido queda para apoyar la tarea.</p><button>Ver reservas</button> <button class="button-accent">Nueva propiedad</button></article>
+          <article class="component"><h3>Campo</h3><label for="sample-location">Ubicación</label><input id="sample-location" value="Mar del Plata" /></article>
+          <article class="component"><h3>Estados funcionales</h3><span class="badge good">✓ Pagada</span> <span class="badge waiting">Pendiente</span> <span class="badge blocked">Bloqueada</span> <span class="badge cancelled">Cancelada</span></article>
+          <article class="component"><h3>Dashboard</h3><div class="dashboard-sample"><article><b>Reservas</b><p>24</p></article><article><b>Ingresos</b><p>$ 840.000</p></article><article><b>Ocupación</b><p>76%</p></article><article><b>Cancelaciones</b><p>2</p></article></div></article>
         </div>
       </section>
       <section>
-        <h2>Do's y Don'ts</h2>
-        <div class="dos">
-          <div><h3>✓ Sí</h3><ul><li>Usar azul para acciones primarias y navegación activa.</li><li>Usar verde para énfasis de apoyo.</li><li>Mostrar estados con texto e icono además del color.</li><li>Mantener el foco de teclado visible y los controles táctiles amplios.</li></ul></div>
-          <div><h3>✗ Evitar</h3><ul><li>Usar texto blanco sobre el verde de marca.</li><li>Recargar las fotos con etiquetas decorativas.</li><li>Ocultar acciones importantes solo al pasar el cursor.</li><li>Permitir desplazamiento horizontal de toda la página en móvil.</li></ul></div>
-        </div>
+        <h2>Movimiento</h2>
+        <p>Feedback rápido de 180ms, movimiento estándar de 260ms y entrada de contenido de 340ms. Las transiciones son discretas, priorizan transform y opacidad, y respetan prefers-reduced-motion.</p>
       </section>
     </main>
   </body>

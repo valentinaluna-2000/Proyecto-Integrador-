@@ -139,7 +139,7 @@ export class CatalogComponent implements OnInit {
 @Component({
   standalone: true,
   imports: [FormsModule, RouterLink, StatusComponent, AvailabilityCalendarComponent],
-  template: ` <div class="page">
+  template: ` <div class="page property-detail-page">
     <a routerLink="/propiedades" class="back">← Todos los alojamientos</a
     ><app-status [loading]="loading" [error]="error" [success]="success" />
     @if (property; as p) {
@@ -164,9 +164,9 @@ export class CatalogComponent implements OnInit {
           <section class="detail-section">
             <h2>Tu próximo lugar</h2>
             <div class="amenities">
-              <span>{{ p.capacidad }} huéspedes</span
-              ><span>{{ p.cantidad_habitaciones }} habitaciones</span
-              ><span>{{ p.cantidad_banos }} baños</span
+              <span>{{ p.capacidad }} {{ p.capacidad === 1 ? 'huésped' : 'huéspedes' }}</span
+              ><span>{{ p.cantidad_habitaciones }} {{ p.cantidad_habitaciones === 1 ? 'habitación' : 'habitaciones' }}</span
+              ><span>{{ p.cantidad_banos }} {{ p.cantidad_banos === 1 ? 'baño' : 'baños' }}</span
               ><span>{{ p.acepta_mascotas ? 'Admite mascotas' : 'Sin mascotas' }}</span
               ><span>{{ p.acepta_menores ? 'Admite menores' : 'Solo adultos' }}</span>
             </div>
@@ -224,7 +224,7 @@ export class CatalogComponent implements OnInit {
         <aside class="booking-card">
           <strong class="price">{{ money(p.precio_noche) }} <small>/ noche</small></strong>
           <p class="muted small">Elegí ingreso y egreso directamente en el calendario.</p>
-          <form (ngSubmit)="reserve()">
+          <form #bookingForm="ngForm" (ngSubmit)="bookingForm.valid && reserve()">
             <app-availability-calendar
               [propertyId]="p.id"
               [maxMonths]="p.limite_meses_reserva"
@@ -260,7 +260,7 @@ export class CatalogComponent implements OnInit {
                 </div>
               </dl>
             }
-            <button class="full" [disabled]="busy || !calendarReady || !from || !to || available !== true">
+            <button class="full" [disabled]="busy || bookingForm.invalid || !calendarReady || !from || !to || available !== true">
               {{ busy ? 'Procesando…' : 'Reservar mi estadía' }} ↗
             </button>
             <p class="small muted center">

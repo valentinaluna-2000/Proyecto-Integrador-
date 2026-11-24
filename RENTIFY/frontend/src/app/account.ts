@@ -15,13 +15,15 @@ type ReservationSummary = {
 @Component({
   standalone: true,
   imports: [RouterLink, StatusComponent],
-  template: `<div class="page">
+  template: `<div class="page reservations-page" [class.owner-reservations-page]="admin" [class.guest-reservations-page]="!admin">
     <div class="section-heading">
       <div>
-        <span class="eyebrow">TUS PRÓXIMAS HISTORIAS</span>
+        <span class="eyebrow">{{ admin ? 'GESTIÓN DE RESERVAS' : 'TUS PRÓXIMAS HISTORIAS' }}</span>
         <h1>{{ admin ? 'Reservas' : 'Mis reservas' }}</h1>
       </div>
-      <a routerLink="/propiedades" class="button secondary">Explorar alojamientos ↗</a>
+      <a [routerLink]="admin ? '/admin/propiedades' : '/propiedades'" class="button secondary">
+        {{ admin ? 'Ver propiedades ↗' : 'Explorar alojamientos ↗' }}
+      </a>
     </div>
     <app-status [error]="error" [loading]="loading" />
     @if (!loading && !rows.length && !error) {
@@ -40,7 +42,7 @@ type ReservationSummary = {
             <h3>{{ r.propiedad_nombre }}</h3>
             <p class="muted">
               {{ date(r.fecha_desde) }} → {{ date(r.fecha_hasta) }} ·
-              {{ r.cantidad_huespedes }} huéspedes
+              {{ r.cantidad_huespedes }} {{ r.cantidad_huespedes === 1 ? 'huésped' : 'huéspedes' }}
             </p>
           </div>
           <span class="badge" [attr.data-state]="r.estado">{{ r.estado }}</span>
@@ -104,11 +106,11 @@ export class ReservationsComponent implements OnInit {
 @Component({
   standalone: true,
   imports: [FormsModule, RouterLink, StatusComponent],
-  template: `<div class="page narrow">
+  template: `<div class="page narrow reservation-detail-page" [class.owner-reservation-detail]="admin">
     <a [routerLink]="admin ? '/admin/reservas' : '/mis-reservas'" class="back"
       >← Volver a reservas</a
     >
-    <h1>Tu reserva #{{ id }}</h1>
+    <h1>{{ admin ? 'Reserva' : 'Tu reserva' }} #{{ id }}</h1>
     <app-status [loading]="loading" [error]="error" [success]="success" />
     @if (r) {
       <article class="surface">
@@ -142,7 +144,7 @@ export class ReservationsComponent implements OnInit {
         </dl>
         @if (r.estado === 'TEMPORAL' && remaining > 0) {
           <div class="notice">
-            Reserva creada. Tenés 1 h 30 min para pagar la seña.<br />Tiempo restante:
+            {{ admin ? 'La reserva está pendiente de pago.' : 'Reserva creada. Tenés 1 h 30 min para pagar la seña.' }}<br />Tiempo restante:
             <strong>{{ countdown }}</strong>
           </div>
           @if (!admin) {
@@ -151,10 +153,10 @@ export class ReservationsComponent implements OnInit {
           }
         }
         @if (r.estado === 'VENCIDA' || (r.estado === 'TEMPORAL' && remaining <= 0)) {
-          <p class="notice">La reserva venció. Volvé a consultar disponibilidad para crear otra.</p>
+          <p class="notice">{{ admin ? 'La reserva venció.' : 'La reserva venció. Volvé a consultar disponibilidad para crear otra.' }}</p>
         }
         @if (r.estado === 'CONFIRMADA') {
-          <div class="notice success">El pago fue aprobado. Tu reserva está confirmada.</div>
+          <div class="notice success">{{ admin ? 'El pago fue aprobado. La reserva está confirmada.' : 'El pago fue aprobado. Tu reserva está confirmada.' }}</div>
         }
         <button class="text-button" (click)="load()" [disabled]="busy">
           Actualizar estado del pago
@@ -186,7 +188,7 @@ export class ReservationsComponent implements OnInit {
             <p class="small muted">
               Hasta 72 horas antes del ingreso. No se puede cancelar una estadía iniciada.
             </p>
-            <form (ngSubmit)="cancel()">
+            <form #cancelForm="ngForm" (ngSubmit)="cancelForm.valid && cancel()">
               <label
                 >Motivo<textarea
                   name="reason"
@@ -202,7 +204,7 @@ export class ReservationsComponent implements OnInit {
                   excepcional</label
                 >
               }
-              <button class="danger" [disabled]="busy">Confirmar cancelación</button>
+              <button class="danger" [disabled]="busy || cancelForm.invalid">Confirmar cancelación</button>
             </form>
           </details>
         }
@@ -289,12 +291,12 @@ export class ReservationDetailComponent implements OnInit, OnDestroy {
 @Component({
   standalone: true,
   imports: [FormsModule, RouterLink, StatusComponent],
-  template: `<div class="page narrow">
+  template: `<div class="page narrow profile-page">
     <span class="eyebrow">TU CUENTA</span>
     <h1>Mi perfil</h1>
     <article class="surface">
       <app-status [error]="error" [success]="success" [loading]="busy" />
-      <form (ngSubmit)="save()">
+      <form #profileForm="ngForm" (ngSubmit)="profileForm.valid && save()">
         <div class="form-grid">
           <label
             >Nombre<input name="nombre" [(ngModel)]="data.nombre" minlength="2" required /></label
@@ -306,7 +308,7 @@ export class ReservationDetailComponent implements OnInit, OnDestroy {
         @if (auth.user()?.role === 'CLIENTE') {
           <label>Teléfono<input name="telefono" [(ngModel)]="data.telefono" required /></label>
         }
-        <button [disabled]="busy">Guardar cambios</button>
+        <button [disabled]="busy || profileForm.invalid">Guardar cambios</button>
       </form>
       <a class="text-link" routerLink="/cuenta/contrasena">Cambiar contraseña →</a>
     </article>
