@@ -326,7 +326,7 @@ export class DetailComponent implements OnInit {
           `https://www.google.com/maps/embed/v1/place?key=${encodeURIComponent(this.auth.mapsKey)}&q=${encodeURIComponent(p.latitud + ',' + p.longitud)}`,
         );
       }
-      if (this.from && this.to && this.nights > 0) await this.availability();
+      if (this.from && this.to && this.nights >= 1) await this.availability();
     } catch (e) {
       this.error = message(e);
     } finally {

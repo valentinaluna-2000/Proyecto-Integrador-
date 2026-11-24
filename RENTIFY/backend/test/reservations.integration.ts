@@ -6,6 +6,7 @@ import { DateTime } from 'luxon';
 import * as entities from '../src/persistence/entities';
 import { Initial1780000000000 } from '../src/persistence/migrations/1780000000000-Initial';
 import { BlockReservationOverlap1781000000000 } from '../src/persistence/migrations/1781000000000-BlockReservationOverlap';
+import { CheckoutBeforeCheckin1782000000000 } from '../src/persistence/migrations/1782000000000-CheckoutBeforeCheckin';
 import { ReservationsService } from '../src/reservations/reservations.service';
 import { PropertiesService } from '../src/properties/properties.service';
 import { AvailabilityService } from '../src/availability/availability.service';
@@ -36,7 +37,7 @@ suite('PostgreSQL real: integridad, concurrencia y reportes', () => {
       type: 'postgres',
       url,
       entities: Object.values(entities),
-      migrations: [Initial1780000000000, BlockReservationOverlap1781000000000],
+      migrations: [Initial1780000000000, BlockReservationOverlap1781000000000, CheckoutBeforeCheckin1782000000000],
       synchronize: false,
     });
     await db.initialize();

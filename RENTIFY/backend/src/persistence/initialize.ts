@@ -29,9 +29,10 @@ async function initialize() {
     await source.destroy();
   }
 }
-initialize().catch(() => {
+initialize().catch((error: unknown) => {
   console.error(
     'Inicialización fallida: revisá variables obligatorias, PostgreSQL, migraciones y permisos de Storage. No se iniciará la API.',
   );
+  console.error(error instanceof Error ? (error.stack || error.message) : error);
   process.exitCode = 1;
 });

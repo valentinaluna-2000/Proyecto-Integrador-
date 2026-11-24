@@ -98,7 +98,8 @@ export class PropertiesService implements ILogicaPropiedades {
         ...data,
         latitud: String(data.latitud ?? p.latitud),
         longitud: String(data.longitud ?? p.longitud),
-      });
+      };
+      return tx.save(Propiedad, updated);
     });
   }
   async image(id: number, actor: Actor, file: Express.Multer.File) {
