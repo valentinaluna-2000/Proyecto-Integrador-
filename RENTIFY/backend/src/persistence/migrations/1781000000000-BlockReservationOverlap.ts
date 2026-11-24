@@ -5,7 +5,7 @@ export class BlockReservationOverlap1781000000000 implements MigrationInterface 
     await q.query(`
 ALTER TABLE propiedades
   ADD CONSTRAINT propiedad_horarios_validos CHECK (
-    hora_checkout >= hora_checkin OR (hora_checkin >= TIME '12:00' AND hora_checkout < TIME '12:00')
+    hora_checkout < hora_checkin
   ) NOT VALID;
 
 CREATE FUNCTION reject_reservation_block_overlap() RETURNS trigger LANGUAGE plpgsql AS $$

@@ -525,11 +525,6 @@ export class PropertyEditorComponent implements OnInit {
   }
   save() {
     return this.action(async () => {
-      const overnight =
-        this.data['hora_checkin'] >= '12:00' && this.data['hora_checkout'] < '12:00';
-      if (this.data['hora_checkout'] < this.data['hora_checkin'] && !overnight) {
-        throw new Error('La hora de egreso no puede ser anterior a la hora de ingreso.');
-      }
       const body = {
         ...this.data,
         precio_noche: String(this.data['precio_noche']),

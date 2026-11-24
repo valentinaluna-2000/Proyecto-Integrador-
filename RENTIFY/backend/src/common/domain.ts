@@ -39,7 +39,7 @@ export function dates(from: string, to: string) {
     !/^\d{4}-\d{2}-\d{2}$/.test(to) ||
     !a.isValid ||
     !b.isValid ||
-    b <= a
+    b < a.plus({ days: 1 })
   )
     throw new BadRequestException('Las fechas deben ser válidas y el egreso posterior al ingreso.');
   return { a, b, nights: Math.round(b.diff(a, 'days').days) };

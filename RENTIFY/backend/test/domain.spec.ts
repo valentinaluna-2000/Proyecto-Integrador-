@@ -16,6 +16,8 @@ describe('Reglas de reservas y dinero', () => {
     ['2027-02-30', '2027-03-04'],
     ['2027-01-01', '2027-01-01'],
   ])('rechaza fechas inválidas %s %s', (a, b) => expect(() => dates(a, b)).toThrow());
+  test('una reserva debe durar al menos una noche', () =>
+    expect(() => dates('2027-01-01', '2027-01-02')).not.toThrow());
   test('valida capacidad y anticipación', () => {
     const now = DateTime.fromISO('2027-01-01');
     expect(() =>

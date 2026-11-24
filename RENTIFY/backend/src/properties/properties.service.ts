@@ -69,13 +69,6 @@ export class PropertiesService implements ILogicaPropiedades {
     };
   }
   private money(data: UpdatePropertyDto) {
-    if (
-      data.hora_checkin !== undefined &&
-      data.hora_checkout !== undefined &&
-      data.hora_checkout < data.hora_checkin &&
-      !(data.hora_checkin >= '12:00' && data.hora_checkout < '12:00')
-    )
-      throw new BadRequestException('La hora de egreso no puede ser anterior a la hora de ingreso.');
     if (data.precio_noche !== undefined && new Decimal(data.precio_noche).lte(0))
       throw new BadRequestException('El precio debe ser mayor a cero.');
     if (
@@ -106,13 +99,6 @@ export class PropertiesService implements ILogicaPropiedades {
         latitud: String(data.latitud ?? p.latitud),
         longitud: String(data.longitud ?? p.longitud),
       };
-      if (
-        updated.hora_checkout < updated.hora_checkin &&
-        !(updated.hora_checkin >= '12:00' && updated.hora_checkout < '12:00')
-      )
-        throw new BadRequestException(
-          'La hora de egreso no puede ser anterior a la hora de ingreso.',
-        );
       return tx.save(Propiedad, updated);
     });
   }
