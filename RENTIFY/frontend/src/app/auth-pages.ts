@@ -17,7 +17,7 @@ import { StatusComponent } from './shared';
               <h1 tabindex="-1">Creá tu cuenta</h1>
               <p class="auth-description">Guardá tus datos y encontrá más rápido tu próxima estadía.</p>
               <app-status [error]="error" [success]="success" [loading]="busy" />
-              <form (ngSubmit)="submit()">
+              <form #registrationForm="ngForm" (ngSubmit)="registrationForm.valid && submit()">
                 <div class="form-grid">
                   <label>Nombre<input name="nombre" [(ngModel)]="data.nombre" minlength="2" maxlength="80" required autocomplete="given-name" /></label>
                   <label>Apellido<input name="apellido" [(ngModel)]="data.apellido" minlength="2" maxlength="80" required autocomplete="family-name" /></label>
@@ -31,7 +31,7 @@ import { StatusComponent } from './shared';
                   <label>Repetir contraseña<input name="confirmar" type="password" [(ngModel)]="data.confirmar_password" autocomplete="new-password" required /></label>
                 </div>
                 <p class="small muted auth-hint">Al menos 8 caracteres, una letra y un número.</p>
-                <button class="full auth-submit" [disabled]="busy || transitioning">Crear mi cuenta <span>↗</span></button>
+                <button class="full auth-submit" [disabled]="busy || transitioning || registrationForm.invalid">Crear mi cuenta <span>↗</span></button>
               </form>
             </div>
           </section>
@@ -42,11 +42,11 @@ import { StatusComponent } from './shared';
               <h1 tabindex="-1">Qué bueno verte de nuevo</h1>
               <p class="auth-description">Iniciá sesión para continuar con tus reservas y escapadas.</p>
               <app-status [error]="error" [success]="success" [loading]="busy" />
-              <form (ngSubmit)="submit()">
+              <form #loginForm="ngForm" (ngSubmit)="loginForm.valid && submit()">
                 <label>Correo electrónico<input name="email" type="email" [(ngModel)]="data.email" autocomplete="email" required placeholder="vos@ejemplo.com" /></label>
                 <label>Contraseña<input name="password" type="password" [(ngModel)]="data.password" autocomplete="current-password" minlength="8" maxlength="72" required /></label>
                 <a class="auth-forgot" routerLink="/auth/recuperar">¿Olvidaste tu contraseña?</a>
-                <button class="full auth-submit" [disabled]="busy || transitioning">Iniciar sesión <span>↗</span></button>
+                <button class="full auth-submit" [disabled]="busy || transitioning || loginForm.invalid">Iniciar sesión <span>↗</span></button>
               </form>
               <a class="text-link auth-resend" routerLink="/auth/reenviar">Reenviar correo de verificación</a>
             </div>
@@ -88,7 +88,7 @@ import { StatusComponent } from './shared';
           @if (verified) { <a class="button" routerLink="/auth/login">Iniciar sesión</a> }
           <a class="text-link" routerLink="/auth/reenviar">Solicitar otro enlace</a>
         } @else {
-          <form (ngSubmit)="submit()">
+          <form #utilityForm="ngForm" (ngSubmit)="utilityForm.valid && submit()">
             @if (!passwordMode) {
               <label>Correo electrónico<input name="email" type="email" [(ngModel)]="data.email" autocomplete="email" required placeholder="vos@ejemplo.com" /></label>
             }
@@ -99,7 +99,7 @@ import { StatusComponent } from './shared';
               <label>Repetir contraseña<input name="confirmar" type="password" [(ngModel)]="data.confirmar_password" autocomplete="new-password" required /></label>
               <p class="small muted">Al menos 8 caracteres, una letra y un número.</p>
             }
-            <button class="full" [disabled]="busy">{{ button }} ↗</button>
+            <button class="full" [disabled]="busy || utilityForm.invalid">{{ button }} ↗</button>
           </form>
           <a class="text-link" routerLink="/auth/login">Volver a iniciar sesión</a>
         }

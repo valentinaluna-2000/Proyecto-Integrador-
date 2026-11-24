@@ -1,29 +1,44 @@
 ---
-version: alpha
+version: beta
 name: Rentify
-description: Una identidad hospitalaria y confiable para descubrir alojamientos y gestionar estadías en Argentina.
+description: Identidad PropTech SaaS que combina precisión operativa y calidez hospitalaria.
 colors:
-  primary: "#28396C"
+  primary: "#173B32"
   on-primary: "#FFFFFF"
-  primary-hover: "#1E2D5A"
-  accent: "#B9D175"
-  accent-hover: "#A5BE5E"
-  on-accent: "#28396C"
+  primary-hover: "#102E27"
+  secondary: "#285B4A"
+  sage: "#A8C8B8"
+  accent: "#D9A441"
+  accent-hover: "#C48E2B"
+  on-accent: "#25332F"
   surface: "#FFFFFF"
-  surface-soft: "#D9EFBD"
-  background: "#F5FBDA"
-  on-surface: "#28396C"
-  text-secondary: "#4C5874"
-  border: "#D8DFC4"
-  disabled: "#737963"
-  disabled-surface: "#E8ECD9"
-  success: "#285B3E"
-  success-surface: "#D9EFBD"
-  warning: "#70541B"
-  warning-surface: "#F6EDCF"
+  surface-soft: "#E8F0EC"
+  background: "#F4F7F5"
+  on-surface: "#25332F"
+  text-secondary: "#66736B"
+  text-secondary-brand: "#718078"
+  border: "#E2E9E5"
+  disabled: "#64736A"
+  disabled-surface: "#E9EEEB"
+  focus: "#173B32"
+  status-available: "#285B4A"
+  status-available-surface: "#E5F0EA"
+  status-reserved: "#173B32"
+  status-reserved-surface: "#DEEAE4"
+  status-pending: "#785A1A"
+  status-pending-surface: "#F8EFD9"
+  status-paid: "#285B4A"
+  status-paid-surface: "#E5F0EA"
+  status-blocked: "#59645E"
+  status-blocked-surface: "#E9EEEB"
+  status-cancelled: "#963E45"
+  status-cancelled-surface: "#F8E9E8"
+  success: "#285B4A"
+  success-surface: "#E5F0EA"
+  warning: "#785A1A"
+  warning-surface: "#F8EFD9"
   error: "#963E45"
   error-surface: "#F8E9E8"
-  focus: "#28396C"
 typography:
   display:
     fontFamily: "Manrope, sans-serif"
@@ -48,25 +63,25 @@ typography:
     fontWeight: 600
     lineHeight: 1.3
   body:
-    fontFamily: "DM Sans, sans-serif"
+    fontFamily: "Manrope, sans-serif"
     fontSize: 16px
     fontWeight: 400
-    lineHeight: 1.65
+    lineHeight: 1.6
   small:
-    fontFamily: "DM Sans, sans-serif"
+    fontFamily: "Manrope, sans-serif"
     fontSize: 14px
     fontWeight: 400
     lineHeight: 1.5
   caption:
-    fontFamily: "DM Sans, sans-serif"
+    fontFamily: "Manrope, sans-serif"
     fontSize: 12px
     fontWeight: 600
     lineHeight: 1.4
     letterSpacing: 0.04em
   button:
-    fontFamily: "DM Sans, sans-serif"
+    fontFamily: "Manrope, sans-serif"
     fontSize: 14px
-    fontWeight: 600
+    fontWeight: 650
     lineHeight: 1.2
 rounded:
   sm: 8px
@@ -83,127 +98,103 @@ spacing:
   space-8: 32px
   space-12: 48px
   control: 44px
+elevation:
+  card: "0 10px 30px rgb(23 59 50 / 8%)"
+  hover: "0 16px 36px rgb(23 59 50 / 14%)"
+motion:
+  fast: 180ms
+  standard: 260ms
+  entrance: 340ms
+  easeOut: "cubic-bezier(0.2, 0.8, 0.2, 1)"
 components:
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
     typography: "{typography.button}"
     rounded: "{rounded.md}"
-    padding: "12px 20px"
-    height: "{spacing.control}"
-  button-primary-hover:
-    backgroundColor: "{colors.primary-hover}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button}"
-    rounded: "{rounded.md}"
-    padding: "12px 20px"
     height: "{spacing.control}"
   button-accent:
     backgroundColor: "{colors.accent}"
     textColor: "{colors.on-accent}"
     typography: "{typography.button}"
     rounded: "{rounded.md}"
-    padding: "12px 20px"
-    height: "{spacing.control}"
-  button-accent-hover:
-    backgroundColor: "{colors.accent-hover}"
-    textColor: "{colors.on-accent}"
-    typography: "{typography.button}"
-    rounded: "{rounded.md}"
-    padding: "12px 20px"
     height: "{spacing.control}"
   input:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.on-surface}"
     typography: "{typography.body}"
     rounded: "{rounded.sm}"
-    padding: "12px"
     height: 47px
-  auth-card:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.on-surface}"
-    typography: "{typography.body}"
-    rounded: "{rounded.xl}"
-    padding: 0px
-  auth-promo-panel:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.h2}"
-    rounded: "{rounded.xl}"
-    padding: "48px"
-  auth-toggle-button:
-    backgroundColor: "transparent"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button}"
-    rounded: "{rounded.pill}"
-    padding: "10px 20px"
-    height: 46px
   property-card:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.on-surface}"
     typography: "{typography.body}"
     rounded: "{rounded.lg}"
-    padding: "{spacing.space-6}"
   booking-card:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.on-surface}"
     typography: "{typography.body}"
     rounded: "{rounded.xl}"
-    padding: 28px
   admin-sidebar:
-    backgroundColor: "{colors.surface-soft}"
-    textColor: "{colors.primary}"
-    typography: "{typography.small}"
+    backgroundColor: "{colors.surface}"
+    activeBackground: "{colors.primary}"
+    textColor: "{colors.on-surface}"
+    activeTextColor: "{colors.on-primary}"
     rounded: "{rounded.md}"
-    padding: "{spacing.space-8}"
-  status-confirmed:
-    backgroundColor: "{colors.success-surface}"
-    textColor: "{colors.success}"
-    typography: "{typography.caption}"
+  status-available:
+    backgroundColor: "{colors.status-available-surface}"
+    textColor: "{colors.status-available}"
     rounded: "{rounded.pill}"
-    padding: "8px 11px"
+  status-reserved:
+    backgroundColor: "{colors.status-reserved-surface}"
+    textColor: "{colors.status-reserved}"
+    rounded: "{rounded.pill}"
   status-pending:
-    backgroundColor: "{colors.warning-surface}"
-    textColor: "{colors.warning}"
-    typography: "{typography.caption}"
+    backgroundColor: "{colors.status-pending-surface}"
+    textColor: "{colors.status-pending}"
     rounded: "{rounded.pill}"
-    padding: "8px 11px"
+  status-paid:
+    backgroundColor: "{colors.status-paid-surface}"
+    textColor: "{colors.status-paid}"
+    rounded: "{rounded.pill}"
+  status-blocked:
+    backgroundColor: "{colors.status-blocked-surface}"
+    textColor: "{colors.status-blocked}"
+    rounded: "{rounded.pill}"
+  status-cancelled:
+    backgroundColor: "{colors.status-cancelled-surface}"
+    textColor: "{colors.status-cancelled}"
+    rounded: "{rounded.pill}"
 ---
 
 # Rentify Design System
 
-## Overview
+## Direction
 
-Rentify helps guests discover temporary stays and helps hosts manage properties and reservations across Argentina. The visual tone is calm, welcoming, and dependable. The booking confirmation reference guides guest-facing reservation cards, while the dashboard reference guides the structure of administration. Avoid insurance-style density, neon accents, and decorative elements that compete with property photography.
+**Corporate Tech + Warm Experience.** One brand serves two audiences through different compositions. Guest pages are visual and welcoming, with property photography and clear booking decisions. Owner pages prioritize operational clarity, dense information, and fast access to common actions. Both use the same forest, sage, warm accent, typography, and feedback language.
 
-## Colors
+## Color and accessibility
 
-The supplied navy `primary` anchors navigation, headings, and high-priority actions. `accent` is the supplied muted green and should highlight secondary actions and dashboard data; keep its text navy because white text on this green is not strong enough. `surface-soft` groups related information, while the pale `background` keeps long browsing sessions light. Success, warning, and error states use distinct text and background pairs so color is never their only signal.
+The supplied forest, secondary green, sage, warm accent, background, surface, and primary text values anchor the identity. Use forest for primary actions and active navigation; use sage and the warm accent selectively for supporting emphasis. Keep text on the accent dark. Functional states always include a written label or icon, never color alone.
 
-## Typography
+The brief's #718078 secondary shade is retained as a brand tone for large or decorative text. Small and body copy use #66736B so the contrast against the pale background reaches at least 4.5:1. State pairs are independent of brand colors: available, reserved, pending, paid, blocked, and cancelled each have a foreground and surface token.
 
-Keep the existing Manrope headings and DM Sans body face. Manrope gives headings a clear editorial shape; DM Sans keeps forms, dates, and numbers easy to scan. Use the display level sparingly for the home hero. Reservation dates, capacity, and prices should use the body or heading levels, with tabular numerals where values are compared.
+## Typography and layout
 
-## Layout
+Use Manrope across the product. Keep display type for guest-facing storytelling and use compact, tabular figures for owner metrics, prices, and dates. Follow the documented type scale and 4px spacing rhythm. Guest layouts can use broad photography and editorial sections; administration uses an app shell, a concise page heading, filters near their results, and tables that remain readable on narrow screens.
 
-Use a comfortable spacing rhythm based on 4, 8, 12, 16, 24, 32, and 48 pixels. Guest pages keep the search path prominent and place booking details beside the property description on wide screens. Administration uses a left navigation rail and a fluid content area; on narrow screens the rail becomes a horizontal, scrollable navigation row. Keep content readable at 320 CSS pixels without horizontal page scrolling.
+## Elevation, shape, and interaction
 
-## Elevation & Depth
+Use borders and subtle forest-tinted shadows to define surfaces. Reserve stronger elevation for the booking summary and active overlays. Buttons, links, fields, cards, navigation, calendar days, and gallery controls provide a visible hover/focus/active state where applicable. Async actions show loading and a clear success or recovery message. Motion uses 180ms for quick feedback, 260ms for standard movement, and 340ms for content entrance; animate transform and opacity, and honor prefers-reduced-motion.
 
-Use white cards, a fine `border`, and a soft navy-tinted shadow to separate important panels from the pale background. Reserve stronger elevation for property cards on hover and booking summaries. Avoid heavy dark shadows and avoid relying on shadows alone to define a card boundary.
+## Authentication
 
-Microinteractions use `motion-fast` at 180 ms and `motion-standard` at 260 ms with a soft ease-out curve. New content enters over 340 ms using opacity and a small vertical offset; repeated cards use a short stagger. Hover elevation is limited to devices with a fine pointer. Every non-essential motion yields to `prefers-reduced-motion`.
+Keep the existing sliding login/registration panel and its authentication flow. Improve its visual alignment, focus behavior, form feedback, and mobile layout without replacing Supabase Auth or changing its API calls.
 
-## Shapes
+## Administration
 
-Use 8-pixel corners for form controls, 12 pixels for compact controls, 18 pixels for cards, and 24 pixels for the booking card. Status badges are fully pill-shaped. Keep the rounded language consistent and avoid mixing it with sharp dashboard tiles.
+The owner shell uses the established brand with a focused top bar and the existing six destinations. The dashboard emphasizes the existing reservation, income, occupancy, and cancellation metrics; date/property/report filters; occupancy chart; and detail table. Do not add cards or indicators without real data. At mobile widths, the navigation becomes an independently scrollable row and the page itself must not scroll horizontally.
 
-## Components
+## Design heuristics
 
-The primary button is navy with white text and a 44-pixel minimum height. The accent button uses the supplied green with navy text. Buttons give a small press response; cards lift slightly and their photos scale subtly on hover. The login and registration screens share an `auth-card`: its promo panel slides between sides while only the active form remains available to assistive technology. On mobile, the card becomes a single-column form with the switch panel below it. Inputs have visible labels, a clear navy focus ring, and a white surface. Property and reservation cards use a fine border with modest elevation. Confirmed, pending, cancelled, and expired states keep their text label and use readable semantic color pairs. The admin rail highlights the active destination with a navy filled row.
-
-## Do's and Don'ts
-
-Do use navy for primary actions and active navigation; use green for supporting emphasis; give dates and prices clear hierarchy; keep status text explicit; preserve visible keyboard focus; and adapt the admin rail for touch screens.
-
-Don't put white text on the supplied green; communicate a reservation state with color alone; crowd property photography with badges; hide a key action behind hover; use heavy shadows; or let admin navigation cause horizontal page scrolling on mobile.
+The primary action is the strongest action on each view (H1 / Von Restorff). Related inputs and filters are grouped (H3 / Proximity). Data screens define loading, error, empty, and success states (H28 / Doherty Threshold). Forms use visible labels, native input types, and clear validation (H23–H26). Reflow at 320 CSS px (H9), maintain visible keyboard focus (H38), use touch targets of at least 44px where practical (H39 / Fitts's Law), and keep motion within 150–400ms while respecting reduced motion (H33–H36). Reuse familiar navigation patterns (Jakob's Law) and preserve the user's current context (Recognition over Recall).
