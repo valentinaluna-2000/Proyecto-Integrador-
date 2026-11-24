@@ -6,6 +6,8 @@ El punto de entrada es `backend/src/main.ts`: crea `AppModule`, aplica Helmet, C
 
 `GET /properties/:id/availability` entra a `PropertiesController.available` en `backend/src/properties/properties.controller.ts`; `RangeDto` de `backend/src/common/dtos.ts` es validado; `AvailabilityService.check` consulta TypeORM/SQL parametrizado; Nest serializa la respuesta. Este reparto separa transporte (controller), validación (DTO), negocio (service) y persistencia (repository/DataSource).
 
+Los listados de propiedades (`GET /properties`, `GET /admin/properties`) y reservas (`GET /reservations/me`, `GET /admin/reservations`) aceptan `page` (desde 1) y `limit` (1–100). La respuesta tiene `{ items, total, page, limit }`; el catálogo y las propiedades administrativas muestran 12 elementos por página, y las reservas muestran 20. `GET /admin/properties/options` devuelve solo id y nombre para el selector de reportes.
+
 ## Módulos reales
 
 - `auth/`: `AuthController`, `AuthService` y guards de `security.ts`. Registro crea identidad mediante `IAutenticacion`, perfil Cliente y un evento outbox.

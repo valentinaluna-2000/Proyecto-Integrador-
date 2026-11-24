@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { Actor, Rol, ReservaEstado, PropiedadEstado, quote, validateStay } from '../common/domain';
-import { ReserveDto } from '../common/dtos';
+import { PaginationDto, PaginatedResult, ReserveDto } from '../common/dtos';
 import { Reserva, Propiedad, Pago, Cancelacion } from '../persistence/entities';
 import {
   lockProperty,
@@ -53,11 +53,29 @@ export class ReservationsService implements ILogicaReservas {
       });
     });
   }
-  async list(actor: Actor) {
-    return this.db.query(
-      `SELECT r.*,p.nombre AS propiedad_nombre,p.direccion FROM reservas r JOIN propiedades p ON p.id=r.propiedad_id WHERE ${actor.role === Rol.ADMINISTRADOR ? 'p.propietario_id' : 'r.cliente_id'}=$1 ORDER BY r.fecha_creacion DESC LIMIT 500`,
-      [actor.role === Rol.ADMINISTRADOR ? actor.propietario_id : actor.id],
-    );
+  async list(
+    actor: Actor,
+    pagination: PaginationDto,
+  ): Promise<PaginatedResult<Record<string, unknown>>> {
+    const ownerColumn = actor.role === Rol.ADMINISTRADOR ? 'p.propietario_id' : 'r.cliente_id';
+    const actorId = actor.role === Rol.ADMINISTRADOR ? actor.propietario_id : actor.id;
+    const params = [actorId, pagination.limit, (pagination.page - 1) * pagination.limit];
+    const [items, countRows] = await Promise.all([
+      this.db.query(
+        `SELECT r.*,p.nombre AS propiedad_nombre,p.direccion FROM reservas r JOIN propiedades p ON p.id=r.propiedad_id WHERE ${ownerColumn}=$1 ORDER BY r.fecha_creacion DESC,r.id DESC LIMIT $2 OFFSET $3`,
+        params,
+      ),
+      this.db.query(
+        `SELECT count(*)::int AS total FROM reservas r JOIN propiedades p ON p.id=r.propiedad_id WHERE ${ownerColumn}=$1`,
+        [actorId],
+      ),
+    ]);
+    return {
+      items,
+      total: Number(countRows[0]?.total ?? 0),
+      page: pagination.page,
+      limit: pagination.limit,
+    };
   }
   async detail(id: number, actor: Actor) {
     const { r, p } = await accessibleReservation(this.db.manager, id, actor);

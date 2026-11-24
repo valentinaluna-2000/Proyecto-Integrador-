@@ -58,6 +58,9 @@ export class AdminPropertiesController {
   @Get() list(@CurrentUser() u: Actor, @Query() q: FiltersDto) {
     return this.service.list(q, u);
   }
+  @Get('options') options(@CurrentUser() u: Actor) {
+    return this.service.options(u);
+  }
   @Get(':id') get(@Param('id', ParseIntPipe) id: number, @CurrentUser() u: Actor) {
     return this.service.get(id, u);
   }

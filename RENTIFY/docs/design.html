@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rentify · Sistema visual</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --forest: #173b32;
+        --forest-hover: #102e27;
+        --secondary: #285b4a;
+        --sage: #a8c8b8;
+        --accent: #d9a441;
+        --accent-hover: #c48e2b;
+        --surface: #fff;
+        --surface-soft: #e8f0ec;
+        --canvas: #f4f7f5;
+        --ink: #25332f;
+        --muted: #66736b;
+        --border: #e2e9e5;
+        --success: #285b4a;
+        --success-surface: #e5f0ea;
+        --warning: #785a1a;
+        --warning-surface: #f8efd9;
+        --error: #963e45;
+        --error-surface: #f8e9e8;
+        --blocked: #59645e;
+        --blocked-surface: #e9eeeb;
+        --display: 60px;
+        --h1: 40px;
+        --h2: 28px;
+        --h3: 20px;
+        --body: 16px;
+        --small: 14px;
+        --caption: 12px;
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 18px;
+        --radius-xl: 24px;
+        --pill: 999px;
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-6: 24px;
+        --space-8: 32px;
+        --space-12: 48px;
+        --control: 44px;
+        --shadow: 0 10px 30px rgb(23 59 50 / 8%);
+        --fast: 180ms;
+        --standard: 260ms;
+        --ease-out: cubic-bezier(.2, .8, .2, 1);
+        font: 400 var(--body)/1.6 Manrope, sans-serif;
+        color: var(--ink);
+        background: var(--canvas);
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      main { max-width: 1120px; margin: auto; padding: 40px 24px 72px; }
+      h1, h2, h3 { font-family: Manrope, sans-serif; line-height: 1.2; }
+      h1 { font-size: clamp(32px, 5vw, var(--display)); margin: 8px 0; letter-spacing: -.045em; }
+      h2 { font-size: var(--h2); margin: 0 0 18px; }
+      h3 { font-size: var(--h3); margin: 0 0 8px; }
+      p { max-width: 70ch; margin: 8px 0 18px; color: var(--muted); }
+      section { padding: 32px 0; border-top: 1px solid var(--border); }
+      .eyebrow { color: var(--secondary); font-size: var(--caption); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+      .swatches, .components { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+      .swatch { min-height: 108px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md); display: flex; flex-direction: column; justify-content: space-between; }
+      .swatch code { font-size: var(--caption); }
+      .forest { background: var(--forest); color: white; }
+      .forest-hover { background: var(--forest-hover); color: white; }
+      .sage { background: var(--sage); color: var(--ink); }
+      .accent { background: var(--accent); color: var(--ink); }
+      .soft { background: var(--surface-soft); color: var(--ink); }
+      .canvas { background: var(--canvas); color: var(--ink); }
+      .surface { background: var(--surface); color: var(--ink); }
+      .secondary-copy { background: white; color: var(--muted); }
+      .specimen, .component { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 10px 0; box-shadow: var(--shadow); }
+      .type-display { font-size: var(--display); font-weight: 500; letter-spacing: -.045em; }
+      .type-h1 { font-size: var(--h1); font-weight: 600; }
+      .type-h2 { font-size: var(--h2); font-weight: 600; }
+      .type-h3 { font-size: var(--h3); font-weight: 600; }
+      .scale { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+      .scale i { display: block; height: 10px; background: var(--sage); border-radius: var(--pill); margin-bottom: 7px; }
+      .radius-samples { display: flex; flex-wrap: wrap; gap: 12px; }
+      .radius-samples span { width: 110px; height: 66px; display: grid; place-items: center; background: var(--surface-soft); border: 1px solid var(--border); }
+      .r-sm { border-radius: var(--radius-sm); } .r-md { border-radius: var(--radius-md); }
+      .r-lg { border-radius: var(--radius-lg); } .r-xl { border-radius: var(--radius-xl); } .r-pill { border-radius: var(--pill); }
+      .components { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+      button { min-height: var(--control); border: 0; border-radius: var(--radius-md); padding: 10px 18px; background: var(--forest); color: white; font: 600 var(--small) Manrope, sans-serif; cursor: pointer; transition: transform var(--fast) var(--ease-out), background var(--fast), box-shadow var(--fast); }
+      button:hover { background: var(--forest-hover); box-shadow: var(--shadow); transform: translateY(-1px); }
+      button:active { transform: translateY(1px); }
+      button:focus-visible, input:focus-visible { outline: 3px solid var(--secondary); outline-offset: 3px; }
+      .button-accent { background: var(--accent); color: var(--ink); }
+      .button-accent:hover { background: var(--accent-hover); color: var(--ink); }
+      input { width: 100%; min-height: 47px; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; color: var(--ink); font: inherit; }
+      .badge { display: inline-flex; padding: 7px 10px; border-radius: var(--pill); font-size: var(--caption); font-weight: 700; }
+      .good { color: var(--success); background: var(--success-surface); }
+      .waiting { color: var(--warning); background: var(--warning-surface); }
+      .blocked { color: var(--blocked); background: var(--blocked-surface); }
+      .cancelled { color: var(--error); background: var(--error-surface); }
+      .audiences { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+      .audiences article { padding: 24px; border-radius: var(--radius-lg); }
+      .guest { background: var(--surface); border: 1px solid var(--border); }
+      .owner { background: var(--forest); color: white; }
+      .owner p { color: #e3ece7; }
+      .dashboard-sample { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+      .dashboard-sample article { padding: 16px; border: 1px solid var(--border); background: white; border-radius: var(--radius-md); }
+      .dashboard-sample article:first-child { background: var(--forest); color: white; }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+      @media (max-width: 620px) { main { padding: 28px 16px 48px; } .type-display { font-size: 40px; } .audiences { grid-template-columns: 1fr; } .dashboard-sample { grid-template-columns: 1fr 1fr; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <span class="eyebrow">Rentify · Sistema visual</span>
+        <h1>Precisión operativa. Calidez hospitalaria.</h1>
+        <p>Una identidad compartida para la experiencia de huéspedes y propietarios, con composiciones pensadas para cada tarea.</p>
+      </header>
+      <section>
+        <h2>Paleta</h2>
+        <div class="swatches">
+          <div class="swatch forest"><b>primary</b><code>#173B32</code></div>
+          <div class="swatch forest-hover"><b>primary-hover</b><code>#102E27</code></div>
+          <div class="swatch"><b>secondary</b><code>#285B4A</code></div>
+          <div class="swatch sage"><b>sage</b><code>#A8C8B8</code></div>
+          <div class="swatch accent"><b>accent · on-accent</b><code>#D9A441 · #25332F</code></div>
+          <div class="swatch soft"><b>surface-soft</b><code>#E8F0EC</code></div>
+          <div class="swatch canvas"><b>background</b><code>#F4F7F5</code></div>
+          <div class="swatch surface"><b>surface · on-surface</b><code>#FFFFFF · #25332F</code></div>
+          <div class="swatch secondary-copy"><b>accessible body copy</b><code>#66736B</code></div>
+          <div class="swatch"><b>border · focus</b><code>#E2E9E5 · #173B32</code></div>
+          <div class="swatch good"><b>paid / available</b><code>#285B4A sobre #E5F0EA</code></div>
+          <div class="swatch waiting"><b>pending</b><code>#785A1A sobre #F8EFD9</code></div>
+          <div class="swatch blocked"><b>blocked</b><code>#59645E sobre #E9EEEB</code></div>
+          <div class="swatch cancelled"><b>cancelled</b><code>#963E45 sobre #F8E9E8</code></div>
+        </div>
+      </section>
+      <section>
+        <h2>Una marca, dos experiencias</h2>
+        <div class="audiences">
+          <article class="guest"><span class="eyebrow">HUÉSPEDES</span><h3>Visual, cercana y clara</h3><p>Fotografía, búsqueda y decisiones de reserva con datos transparentes.</p></article>
+          <article class="owner"><span class="eyebrow">PROPIETARIOS</span><h3>Operativa y enfocada</h3><p>Lectura rápida de métricas, filtros y acciones frecuentes del negocio.</p></article>
+        </div>
+      </section>
+      <section>
+        <h2>Tipografía</h2>
+        <div class="specimen type-display">Una estadía empieza con confianza</div>
+        <div class="specimen type-h1">Vista general del negocio</div>
+        <div class="specimen type-h2">Próximas reservas</div>
+        <div class="specimen type-h3">Brisa del Mar</div>
+        <div class="specimen">Manrope mantiene una voz consistente en títulos, formularios, fechas y métricas.</div>
+      </section>
+      <section>
+        <h2>Espaciado y forma</h2>
+        <div class="scale">
+          <div><i style="width:var(--space-1)"></i><code>4px</code></div><div><i style="width:var(--space-2)"></i><code>8px</code></div>
+          <div><i style="width:var(--space-3)"></i><code>12px</code></div><div><i style="width:var(--space-4)"></i><code>16px</code></div>
+          <div><i style="width:var(--space-6)"></i><code>24px</code></div><div><i style="width:var(--space-8)"></i><code>32px</code></div><div><i style="width:var(--space-12)"></i><code>48px</code></div>
+        </div>
+        <div class="radius-samples"><span class="r-sm">8px</span><span class="r-md">12px</span><span class="r-lg">18px</span><span class="r-xl">24px</span><span class="r-pill">pill</span></div>
+      </section>
+      <section>
+        <h2>Componentes e interacción</h2>
+        <div class="components">
+          <article class="component"><h3>Acciones</h3><p>Una acción primaria; el acento cálido queda para apoyar la tarea.</p><button>Ver reservas</button> <button class="button-accent">Nueva propiedad</button></article>
+          <article class="component"><h3>Campo</h3><label for="sample-location">Ubicación</label><input id="sample-location" value="Mar del Plata" /></article>
+          <article class="component"><h3>Estados funcionales</h3><span class="badge good">✓ Pagada</span> <span class="badge waiting">Pendiente</span> <span class="badge blocked">Bloqueada</span> <span class="badge cancelled">Cancelada</span></article>
+          <article class="component"><h3>Dashboard</h3><div class="dashboard-sample"><article><b>Reservas</b><p>24</p></article><article><b>Ingresos</b><p>$ 840.000</p></article><article><b>Ocupación</b><p>76%</p></article><article><b>Cancelaciones</b><p>2</p></article></div></article>
+        </div>
+      </section>
+      <section>
+        <h2>Movimiento</h2>
+        <p>Feedback rápido de 180ms, movimiento estándar de 260ms y entrada de contenido de 340ms. Las transiciones son discretas, priorizan transform y opacidad, y respetan prefers-reduced-motion.</p>
+      </section>
+    </main>
+  </body>
+</html>

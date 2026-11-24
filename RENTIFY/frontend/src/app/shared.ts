@@ -38,8 +38,10 @@ export class StatusComponent {
       <div class="muted small">{{ property().direccion }}</div>
       <h3>{{ property().nombre }}</h3>
       <p class="small muted">
-        {{ property().capacidad }} huéspedes · {{ property().cantidad_habitaciones }} habitaciones ·
-        {{ property().cantidad_banos }} baños
+        {{ property().capacidad }} {{ property().capacidad === 1 ? 'huésped' : 'huéspedes' }} ·
+        {{ property().cantidad_habitaciones }}
+        {{ property().cantidad_habitaciones === 1 ? 'habitación' : 'habitaciones' }} ·
+        {{ property().cantidad_banos }} {{ property().cantidad_banos === 1 ? 'baño' : 'baños' }}
       </p>
       <div class="card-bottom">
         <strong>{{ money(property().precio_noche) }} <small>/ noche</small></strong
