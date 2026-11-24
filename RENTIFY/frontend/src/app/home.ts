@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Api, Page, Property, message } from './core';
@@ -14,15 +14,33 @@ import { PropertyCardComponent, StatusComponent } from './shared';
       <p>Propiedades pensadas para descansar, trabajar o descubrir un lugar nuevo con tranquilidad.</p>
       <a routerLink="/propiedades" class="button">Explorar propiedades <span>↗</span></a>
     </div>
-    <a class="guest-home-visual" [routerLink]="featured[0] ? ['/propiedades', featured[0].id] : '/propiedades'" aria-label="Descubrir alojamientos">
-      <img [src]="featured[0]?.imagenes?.[0]?.url || '/house.svg'" [alt]="featured[0]?.nombre || 'Alojamientos para tu próxima estadía'" (error)="fallback($event)" />
-      @if (featured[0]; as cover) {
-        <span class="guest-home-caption"><small>UN LUGAR PARA DESCUBRIR</small><strong>{{ cover.nombre }}</strong><span>{{ cover.direccion }}</span></span>
+    <div class="guest-home-carousel" (mouseenter)="pauseCarousel()" (mouseleave)="resumeCarousel()" (focusin)="pauseCarousel()" (focusout)="resumeCarousel()">
+      @if (activeProperty; as cover) {
+        <a class="guest-home-visual" [class.is-transitioning]="transitioning" [routerLink]="['/propiedades', cover.id]" [attr.aria-label]="'Ver alojamiento ' + cover.nombre">
+          @if (cover.imagenes[0]?.url) {
+            <img [src]="cover.imagenes[0].url" [alt]="cover.nombre" (error)="hideUnavailableImage($event)" />
+          }
+          <span class="guest-home-caption"><small>ALOJAMIENTO {{ activeIndex + 1 }} DE {{ properties.length }}</small><strong>{{ cover.nombre }}</strong><span>{{ cover.direccion }}</span></span>
+        </a>
+        @if (properties.length > 1) {
+          <nav class="guest-home-carousel-controls" aria-label="Navegación de alojamientos destacados">
+            <span>{{ activeIndex + 1 }} / {{ properties.length }}</span>
+            <button type="button" aria-label="Alojamiento anterior" [disabled]="transitioning" (click)="showProperty(-1)">←</button>
+            <button type="button" aria-label="Siguiente alojamiento" [disabled]="transitioning" (click)="showProperty(1)">→</button>
+          </nav>
+        }
       } @else {
-        <span class="guest-home-caption"><small>RENTIFY · ARGENTINA</small><strong>Tu próxima estadía empieza acá</strong></span>
+        <div class="guest-home-visual guest-home-empty" role="status">
+          @if (loading) {
+            <small>RENTIFY · ARGENTINA</small><strong>Buscando alojamientos disponibles…</strong>
+          } @else if (error) {
+            <small>RENTIFY · ARGENTINA</small><strong>No pudimos cargar los alojamientos.</strong>
+          } @else {
+            <small>RENTIFY · ARGENTINA</small><strong>Pronto habrá nuevos lugares para descubrir.</strong><span>Mientras tanto, podés explorar el catálogo.</span>
+          }
+        </div>
       }
-      <span class="guest-home-visual-arrow" aria-hidden="true">↗</span>
-    </a>
+    </div>
   </section>
 
   <section class="home-section quick-search guest-quick-search">
@@ -40,15 +58,18 @@ import { PropertyCardComponent, StatusComponent } from './shared';
     <div class="section-heading"><div><span class="eyebrow">DESTACADOS</span><h2>Lugares para quedarte un poco más</h2></div><a routerLink="/propiedades" class="text-link">Ver todas las propiedades</a></div>
     <app-status [loading]="loading" [error]="error" />
     <div class="property-grid">@for (property of featured; track property.id) { <app-property-card [property]="property" /> }</div>
+    @if (!loading && !error && !featured.length) {
+      <p class="empty guest-featured-empty">Todavía no hay alojamientos publicados. Volvé pronto para descubrir nuevos lugares.</p>
+    }
   </section>
 
   <section class="home-section home-how guest-how">
     <span class="eyebrow">CÓMO FUNCIONA</span><h2>Reservá en cuatro pasos simples.</h2>
     <div class="steps">
-      <article><b>01</b><h3>Buscá</h3><p>Elegí destino, fechas y cantidad de huéspedes.</p></article>
-      <article><b>02</b><h3>Elegí fechas</h3><p>Consultá el calendario actualizado de cada propiedad.</p></article>
-      <article><b>03</b><h3>Reservá</h3><p>Confirmá los detalles de tu estadía.</p></article>
-      <article><b>04</b><h3>Pagá la seña</h3><p>Completá el pago y prepará el viaje.</p></article>
+      <article class="step-card"><div class="step-card-top"><span class="step-number"><span>01</span></span><span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.4 15.4 4.2 4.2"/></svg></span></div><h3>Buscá</h3><p>Elegí destino, fechas y cantidad de huéspedes.</p></article>
+      <article class="step-card"><div class="step-card-top"><span class="step-number"><span>02</span></span><span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5.5" width="17" height="15" rx="2"/><path d="M7.5 3.5v4M16.5 3.5v4M3.5 10h17M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"/></svg></span></div><h3>Elegí fechas</h3><p>Consultá el calendario actualizado de cada propiedad.</p></article>
+      <article class="step-card"><div class="step-card-top"><span class="step-number"><span>03</span></span><span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="4.5" width="14" height="17" rx="2"/><path d="M9 4.5v-1h6v1M8.5 12l2.2 2.2 4.8-4.8"/></svg></span></div><h3>Reservá</h3><p>Confirmá los detalles de tu estadía.</p></article>
+      <article class="step-card"><div class="step-card-top"><span class="step-number"><span>04</span></span><span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span></div><h3>Pagá la seña</h3><p>Completá el pago y prepará el viaje.</p></article>
     </div>
   </section>
 
@@ -58,24 +79,71 @@ import { PropertyCardComponent, StatusComponent } from './shared';
     <a routerLink="/propiedades" class="button">Explorar propiedades <span>↗</span></a>
   </section>`,
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   api = inject(Api);
   router = inject(Router);
+  properties: Property[] = [];
   featured: Property[] = [];
+  activeIndex = 0;
+  transitioning = false;
   loading = false;
   error = '';
+  private carouselTimer?: ReturnType<typeof setInterval>;
+  private transitionTimer?: ReturnType<typeof setTimeout>;
+  private settleTimer?: ReturnType<typeof setTimeout>;
   filters: Record<string, string | number> = { ubicacion: '', fecha_desde: '', fecha_hasta: '', capacidad: '' };
+  get activeProperty() {
+    return this.properties[this.activeIndex];
+  }
   async ngOnInit() {
     this.loading = true;
-    try { this.featured = (await this.api.request<Page<Property>>('/properties?limit=4')).items; }
+    try {
+      const limit = 100;
+      let page = 1;
+      let total = 0;
+      do {
+        const result = await this.api.request<Page<Property>>('/properties?page=' + page + '&limit=' + limit);
+        this.properties = [...this.properties, ...result.items];
+        total = result.total;
+        page += 1;
+        if (!result.items.length) break;
+      } while (this.properties.length < total);
+    }
     catch (error) { this.error = message(error); }
-    finally { this.loading = false; }
+    finally {
+      this.featured = this.properties.slice(0, 4);
+      this.loading = false;
+      this.resumeCarousel();
+    }
+  }
+  ngOnDestroy() {
+    this.pauseCarousel();
+    if (this.transitionTimer) clearTimeout(this.transitionTimer);
+    if (this.settleTimer) clearTimeout(this.settleTimer);
+  }
+  pauseCarousel() {
+    if (this.carouselTimer) clearInterval(this.carouselTimer);
+    this.carouselTimer = undefined;
+  }
+  resumeCarousel() {
+    if (this.carouselTimer || this.properties.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    this.carouselTimer = setInterval(() => this.showProperty(1), 6500);
+  }
+  showProperty(direction: number) {
+    if (this.properties.length < 2 || this.transitioning) return;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.transitioning = !reducedMotion;
+    const change = () => {
+      this.activeIndex = (this.activeIndex + direction + this.properties.length) % this.properties.length;
+      this.settleTimer = setTimeout(() => (this.transitioning = false), reducedMotion ? 0 : 180);
+    };
+    this.transitionTimer = setTimeout(change, reducedMotion ? 0 : 140);
   }
   async search() {
     const queryParams = Object.fromEntries(Object.entries(this.filters).filter(([, value]) => value !== ''));
     await this.router.navigate(['/propiedades'], { queryParams });
   }
-  fallback(event: Event) {
-    (event.target as HTMLImageElement).src = '/house.svg';
+  hideUnavailableImage(event: Event) {
+    (event.target as HTMLImageElement).hidden = true;
   }
 }

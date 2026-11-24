@@ -6,12 +6,14 @@
     <title>Rentify · Sistema visual</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
       :root {
         --forest: #173b32;
         --forest-hover: #102e27;
         --secondary: #285b4a;
+        --brand-blue: #176bb2;
+        --brand-blue-soft: #eaf3f9;
         --sage: #a8c8b8;
         --accent: #d9a441;
         --accent-hover: #c48e2b;
@@ -30,6 +32,7 @@
         --blocked: #59645e;
         --blocked-surface: #e9eeeb;
         --display: 60px;
+        --display-family: Lora, Georgia, serif;
         --h1: 40px;
         --h2: 28px;
         --h3: 20px;
@@ -72,6 +75,8 @@
       .swatch code { font-size: var(--caption); }
       .forest { background: var(--forest); color: white; }
       .forest-hover { background: var(--forest-hover); color: white; }
+      .brand-blue { background: var(--brand-blue); color: white; }
+      .brand-blue-soft { background: var(--brand-blue-soft); color: var(--ink); }
       .sage { background: var(--sage); color: var(--ink); }
       .accent { background: var(--accent); color: var(--ink); }
       .soft { background: var(--surface-soft); color: var(--ink); }
@@ -79,7 +84,7 @@
       .surface { background: var(--surface); color: var(--ink); }
       .secondary-copy { background: white; color: var(--muted); }
       .specimen, .component { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 10px 0; box-shadow: var(--shadow); }
-      .type-display { font-size: var(--display); font-weight: 500; letter-spacing: -.045em; }
+      .type-display { font-family: var(--display-family); font-size: var(--display); font-weight: 500; letter-spacing: -.035em; line-height: 1.12; }
       .type-h1 { font-size: var(--h1); font-weight: 600; }
       .type-h2 { font-size: var(--h2); font-weight: 600; }
       .type-h3 { font-size: var(--h3); font-weight: 600; }
@@ -126,6 +131,8 @@
         <div class="swatches">
           <div class="swatch forest"><b>primary</b><code>#173B32</code></div>
           <div class="swatch forest-hover"><b>primary-hover</b><code>#102E27</code></div>
+          <div class="swatch brand-blue"><b>brand-blue · secondary accent</b><code>#176BB2</code></div>
+          <div class="swatch brand-blue-soft"><b>brand-blue-soft</b><code>#EAF3F9</code></div>
           <div class="swatch"><b>secondary</b><code>#285B4A</code></div>
           <div class="swatch sage"><b>sage</b><code>#A8C8B8</code></div>
           <div class="swatch accent"><b>accent · on-accent</b><code>#D9A441 · #25332F</code></div>
@@ -153,7 +160,7 @@
         <div class="specimen type-h1">Vista general del negocio</div>
         <div class="specimen type-h2">Próximas reservas</div>
         <div class="specimen type-h3">Brisa del Mar</div>
-        <div class="specimen">Manrope mantiene una voz consistente en títulos, formularios, fechas y métricas.</div>
+        <div class="specimen">Lora aporta calidez a los titulares destacados; Manrope mantiene la lectura clara en formularios, fechas y métricas.</div>
       </section>
       <section>
         <h2>Espaciado y forma</h2>

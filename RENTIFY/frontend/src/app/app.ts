@@ -61,9 +61,9 @@ import { Auth } from './core';
   </header>
   <main><router-outlet /></main>
   <footer>
-    <div>
-      <a routerLink="/" class="brand inverse"><img src="/branding/rentify-logo.png" alt="Rentify" /></a>
-      <p>Tu lugar, por un tiempo.<br />Tus recuerdos, para siempre.</p>
+    <div class="footer-brand-group">
+      <a routerLink="/" class="brand footer-brand" aria-label="Rentify inicio"><img src="/branding/rentify-house-mark.png" alt="" /></a>
+      <p class="footer-signoff"><span>Tu lugar por un tiempo,</span><strong>tus recuerdos para siempre.</strong></p>
     </div>
     <div>
       <strong>Un viaje más simple.</strong>

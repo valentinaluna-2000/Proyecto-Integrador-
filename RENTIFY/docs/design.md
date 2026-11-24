@@ -21,6 +21,8 @@ colors:
   disabled: "#64736A"
   disabled-surface: "#E9EEEB"
   focus: "#173B32"
+  brand-blue: "#176BB2"
+  brand-blue-soft: "#EAF3F9"
   status-available: "#285B4A"
   status-available-surface: "#E5F0EA"
   status-reserved: "#173B32"
@@ -41,7 +43,7 @@ colors:
   error-surface: "#F8E9E8"
 typography:
   display:
-    fontFamily: "Manrope, sans-serif"
+    fontFamily: "Lora, Georgia, serif"
     fontSize: 60px
     fontWeight: 500
     lineHeight: 1.08
@@ -175,13 +177,15 @@ components:
 
 ## Color and accessibility
 
-The supplied forest, secondary green, sage, warm accent, background, surface, and primary text values anchor the identity. Use forest for primary actions and active navigation; use sage and the warm accent selectively for supporting emphasis. Keep text on the accent dark. Functional states always include a written label or icon, never color alone.
+The supplied forest, secondary green, sage, warm accent, background, surface, and primary text values anchor the identity. The logo blue (#176BB2) is a secondary brand accent: reserve it for small details such as guest step markers, carousel-control hover feedback, and focused or highlighted authentication controls. Keep forest, greens, and warm neutrals dominant. Use forest for primary actions and active navigation; use sage and the warm accent selectively for supporting emphasis. Keep text on the accent dark. Functional states always include a written label or icon, never color alone. The footer uses the soft-surface token to distinguish the closing area without introducing a new hue.
 
 The brief's #718078 secondary shade is retained as a brand tone for large or decorative text. Small and body copy use #66736B so the contrast against the pale background reaches at least 4.5:1. State pairs are independent of brand colors: available, reserved, pending, paid, blocked, and cancelled each have a foreground and surface token.
 
 ## Typography and layout
 
-Use Manrope across the product. Keep display type for guest-facing storytelling and use compact, tabular figures for owner metrics, prices, and dates. Follow the documented type scale and 4px spacing rhythm. Guest layouts can use broad photography and editorial sections; administration uses an app shell, a concise page heading, filters near their results, and tables that remain readable on narrow screens.
+Use Lora for guest-facing display headlines and Manrope for the rest of the product. The restrained serif adds warmth to storytelling while preserving the clear, technical voice of forms, navigation, and administration. Use compact, tabular figures for owner metrics, prices, and dates. Follow the documented type scale and 4px spacing rhythm. Guest layouts can use broad photography and editorial sections; administration uses an app shell, a concise page heading, filters near their results, and tables that remain readable on narrow screens.
+
+The guest home benefits panel closes with a centered two-line brand message. Keep both lines within the panel's content width and align the stronger display line to the center.
 
 ## Elevation, shape, and interaction
 
