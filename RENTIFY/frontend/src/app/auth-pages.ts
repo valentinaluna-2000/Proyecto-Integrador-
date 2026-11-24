@@ -31,7 +31,7 @@ import { StatusComponent } from './shared';
                   <label>Repetir contraseña<input name="confirmar" type="password" [(ngModel)]="data.confirmar_password" autocomplete="new-password" required /></label>
                 </div>
                 <p class="small muted auth-hint">Al menos 8 caracteres, una letra y un número.</p>
-                <button class="full auth-submit" [disabled]="busy || transitioning || registrationForm.invalid">Crear mi cuenta <span>↗</span></button>
+                <button class="full auth-submit" [disabled]="busy || transitioning || registrationForm.invalid">Crear mi cuenta</button>
               </form>
             </div>
           </section>
@@ -46,7 +46,7 @@ import { StatusComponent } from './shared';
                 <label>Correo electrónico<input name="email" type="email" [(ngModel)]="data.email" autocomplete="email" required placeholder="vos@ejemplo.com" /></label>
                 <label>Contraseña<input name="password" type="password" [(ngModel)]="data.password" autocomplete="current-password" minlength="8" maxlength="72" required /></label>
                 <a class="auth-forgot" routerLink="/auth/recuperar">¿Olvidaste tu contraseña?</a>
-                <button class="full auth-submit" [disabled]="busy || transitioning || loginForm.invalid">Iniciar sesión <span>↗</span></button>
+                <button class="full auth-submit" [disabled]="busy || transitioning || loginForm.invalid">Iniciar sesión</button>
               </form>
               <a class="text-link auth-resend" routerLink="/auth/reenviar">Reenviar correo de verificación</a>
             </div>
